@@ -1,0 +1,27 @@
+﻿
+@using System.Collections
+
+
+
+
+@(Html.Kendo().Grid<PolyFilms.Data.Models.JumboModel>()
+                                .Name("jumboviewGrid")
+                                .Columns(columns =>
+                                {
+                                    columns.Bound(d => d.Weight).HtmlAttributes(WebHelper.SmallColumnStyle).HeaderHtmlAttributes(WebHelper.SmallColumnStyle);
+                                    columns.Bound(d => d.TotalSlitJumbo).HtmlAttributes(WebHelper.SmallColumnStyle).HeaderHtmlAttributes(WebHelper.SmallColumnStyle);
+                                    columns.Bound(d=>d.WasteWeight).HtmlAttributes(WebHelper.SmallColumnStyle).HeaderHtmlAttributes(WebHelper.SmallColumnStyle);
+                                    columns.Bound(d => d.RemainingJumbo).HtmlAttributes(WebHelper.SmallColumnStyle).HeaderHtmlAttributes(WebHelper.SmallColumnStyle);
+                                })
+
+                                .Sortable(sortable => sortable.AllowUnsort(false))
+                                .Filterable(filter => filter.Enabled(false))
+                                .NoRecords()
+                                .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .ServerOperation(true)
+                                .Model(model => model.Id(d => d.JumboId))
+                                .Events(events => events.Error("onError(\"jumboviewGrid\")"))
+                                .Read(read => read.Action("KendoReadJumboDetail", "Slitting").Data("additionalJumboViewInfo"))
+                          ))
+

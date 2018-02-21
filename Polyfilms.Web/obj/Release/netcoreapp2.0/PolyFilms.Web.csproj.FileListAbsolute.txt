@@ -1,0 +1,17 @@
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\bin\Release\netcoreapp2.0\PolyFilms.Web.deps.json
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\bin\Release\netcoreapp2.0\PolyFilms.Web.runtimeconfig.json
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\bin\Release\netcoreapp2.0\PolyFilms.Web.runtimeconfig.dev.json
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\bin\Release\netcoreapp2.0\PolyFilms.Web.dll
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\bin\Release\netcoreapp2.0\PolyFilms.Web.pdb
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\bin\Release\netcoreapp2.0\PolyFilms.Common.dll
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\bin\Release\netcoreapp2.0\PolyFilms.Data.dll
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\bin\Release\netcoreapp2.0\PolyFilms.Services.dll
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\bin\Release\netcoreapp2.0\PolyFilms.Data.pdb
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\bin\Release\netcoreapp2.0\PolyFilms.Services.pdb
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\bin\Release\netcoreapp2.0\PolyFilms.Common.pdb
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\obj\Release\netcoreapp2.0\PolyFilms.Web.csprojResolveAssemblyReference.cache
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\obj\Release\netcoreapp2.0\PolyFilms.Web.csproj.CoreCompileInputs.cache
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\obj\Release\netcoreapp2.0\PolyFilms.Web.AssemblyInfoInputs.cache
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\obj\Release\netcoreapp2.0\PolyFilms.Web.AssemblyInfo.cs
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\obj\Release\netcoreapp2.0\PolyFilms.Web.dll
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\obj\Release\netcoreapp2.0\PolyFilms.Web.pdb

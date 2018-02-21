@@ -1,0 +1,328 @@
+﻿@using PolyFilms.Data.Models
+@using System.Collections
+@using PolyFilms.Common
+
+@{
+    ViewBag.Title = "Dispatch";
+}
+
+<div class="page-title">
+    <div>
+        <h1><i class="fa fa-files-o"></i> Dispatches </h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="fa fa-search"></i>Search</h3>
+                <div class="box-tool">
+                    <a data-action="collapse" href="#"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+            <div class="box-content">
+                <div class="btn-toolbar">
+                    <label class="col-lg-2 control-label">From date</label>
+
+                    <label class="col-lg-2 control-label">To date</label>
+
+                    <label class="col-lg-2 control-label">Dispatch No</label>
+
+                    <label class="col-lg-2 control-label">Buyer</label>
+
+                    <label class="col-lg-2 control-label">Consignee</label>
+
+                    <label class="col-lg-4 control-label"></label>
+
+                </div>
+
+                <div class="btn-toolbar">
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().DatePicker()
+                              .Name("fromDate")
+                              .Events(e => e.Change("startChange"))
+                              .HtmlAttributes(new { @style = "width:100% !important", @tabindex = 1 }))
+                    </div>
+
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().DatePicker()
+                              .Name("toDate")
+                              .Events(e => e.Change("endChange"))
+                              .HtmlAttributes(new { @style = "width:100% !important", @tabindex = 2 }))
+                    </div>
+
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().TextBox().Name("dispatchNo"))
+                    </div>
+
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().ComboBox()
+                            .Name("buyerId")
+                            .HtmlAttributes(new { style = "width:100%;" })
+                            .BindTo(ViewBag.CustomerList)
+                            .DataTextField("Name")
+                            .DataValueField("CustomerId")
+                            .Placeholder("--Select Buyer--")
+                        )
+                    </div>
+
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().ComboBox()
+                            .Name("consigneeId")
+                            .HtmlAttributes(new { style = "width:100%;" })
+                            .BindTo(ViewBag.ConsigneeList)
+                            .DataTextField("Name")
+                            .DataValueField("ConsigneeId")
+                            .Placeholder("--Select Consignee--")
+                        )
+                    </div>
+
+                    <div class="col-lg-2 controls">
+                        <input type="button" value="Search" class="btn btn-primary" onclick="search()" />
+                        <input type="button" value="Reset" id="Reset" class="btn btn-primary" onclick="reset()" style="margin-left: 5px !important" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-xs-12">
+
+        @(Html.Kendo().Grid<DispatchModel>()
+                    .Name("dispatchGrid")
+                    .Columns(columns =>
+                    {
+                        if (AuthorizationHelper.CanEditDelete(ViewContext.RouteData.Values["Controller"].ToString()))
+                        {
+                            columns.Command(command =>
+                            {
+                                if (AuthorizationHelper.CanEdit(ViewContext.RouteData.Values["Controller"].ToString()))
+                                {
+                                    command.Custom("Edit").Text("<span class='k-icon k-i-edit' title='Edit'></span>").HtmlAttributes(new { @style = "margin:2px" }).Click("onEdit");
+                                }
+                                if (AuthorizationHelper.CanDelete(ViewContext.RouteData.Values["Controller"].ToString()))
+                                {
+                                    command.Custom("Delete").Text("<span class='k-icon k-i-close' title='Delete'></span>").HtmlAttributes(new { @style = "margin:2px" }).Click("onDelete");
+                                }
+                                command.Custom("Report1").Text("<span class='k-icon k-i-print' title='Report'></span>").HtmlAttributes(new { @style = "margin:2px" }).Click("onReportList");
+                            }).Title("Action").HtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanStatus)
+                               .HeaderHtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanStatus);
+                        }
+                        columns.Bound(d => d.DispatchNo);
+                        columns.Bound(d => d.DispatchDate).Format("{0:" + CommonHelper.DateFormate + "}");
+                        columns.ForeignKey(d => d.BuyerId, (IEnumerable)ViewBag.CustomerList, "CustomerId", "Name");
+                        columns.Bound(d => d.IsInvoiceGenerated);
+                        columns.Bound(d => d.IsFinalize);
+                    })
+                    .ToolBar(toolbar =>
+                    {
+                        if (AuthorizationHelper.CanAdd(ViewContext.RouteData.Values["Controller"].ToString()))
+                        {
+                            //toolbar.Excel();
+                            toolbar.ClientTemplate("<a class='k-button k-button-icontext' onclick='addDispatch()' href='javascript:void(0)'><span class='k-icon k-i-plus' title='Add'></span>Add</a>" +
+                                                   "<a role='button' class='k-button k-button-icontext k-grid-excel' href='javascript:void(0)'><span class='k-icon k-i-file-excel'></span>Export to Excel</a>");
+
+                        }
+                    })
+                    .Pageable(x =>
+                    {
+                        x.Refresh(true);
+                        x.PageSizes(WebHelper.PageSizes);
+                    })
+                    .Excel(excel => excel
+                        .FileName("Dispatch List")
+                        .Filterable(true)
+                        .ProxyURL(Url.Action("Excel_Export_Save", "Home"))
+                    )
+                                      .Sortable(sortable => sortable.AllowUnsort(false))
+                                      .Filterable(filter => filter.Enabled(false))
+                                      .NoRecords()
+                                      .Events(e => e.DataBound("onDataBound"))
+                                      .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .ServerOperation(true)
+                                      .PageSize(WebHelper.PageSize)
+                                      .Model(model => model.Id(d => d.DispatchId))
+                                      .Events(events => events.Error("onError(\"dispatchGrid\")"))
+                                      .Read(read => read.Action("KendoRead", "Dispatch").Data("additionalInfo"))
+                ))
+    </div>
+</div>
+
+@(Html.Kendo().Window()
+      .Name("wDispatchReport")
+      .Title("Delivery Slip Report")
+      .Visible(false)
+      .Draggable(true)
+      .Modal(true)
+      .Width(900)
+      .Height(720))
+
+@(Html.Kendo().Window()
+      .Name("wDispatchReportList")
+      .Title("Delivery List")
+      .Visible(false)
+      .Draggable(true)
+      .Modal(true)
+      .Width(900)
+      .Height(720))
+
+<script type="text/javascript">
+    function addDispatch() {
+        window.location.href = '@Url.Action("Create", "Dispatch")';
+    }
+
+    function onEdit(e) {
+        e.preventDefault();
+        var tr = $(e.target).closest("tr");
+        var data = this.dataItem(tr);
+        var urllink = '@Url.Action("Edit", "Dispatch")';
+        if (data != null)
+            window.location.href = urllink + "?id=" + data.DispatchId;
+    }
+
+    function onDelete(e) {
+        bootbox.confirm('Are you sure you want to delete this dispatch?', function (result) {
+            if (result === true) {
+                e.preventDefault();
+                var grid = $("#dispatchGrid").data("kendoGrid");
+                var tr = $(e.target).closest("tr");
+                var data = grid.dataItem(tr);
+                var url = '@Url.Action("KendoDestroy", "Dispatch")';
+                if (data != null)
+                    callwebservice(url, 'dispatchId=' + data.DispatchId, DeleteComplete, false, datatypeEnum.text, typeEnum.post);
+            }
+        }, 'popup-confirmation');
+    }
+
+    function DeleteComplete(returString) {
+        if (returString != null) {
+            if (returString !== "") {
+                showMessageOnly(returString, 'popup-error');
+            } else {
+                readKendoGrid('dispatchGrid');
+            }
+        }
+    }
+
+
+    function search() {
+        readKendoGrid('dispatchGrid');
+    }
+
+    function onDataBound(e) {
+        var grid = $("#dispatchGrid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsFinalize === true) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var deleteButton = $(currenRow).find(".k-grid-Delete");
+                deleteButton.hide();
+            }
+        }
+    }
+
+    function additionalInfo() {
+        return {
+            fromDate: getInputValueById('fromDate'),
+            toDate: getInputValueById('toDate'),
+            buyerId: getInputValueById('buyerId'),
+            consigneeId: getInputValueById('consigneeId'),
+            dispatchNo: getInputValueById('dispatchNo')
+        }
+    }
+
+    function reset() {
+        setKendoDatePickerValue('fromDate', '');
+        setKendoDatePickerValue('toDate', '');
+        setKendComboboxValue('buyerId', '');
+        setKendComboboxValue('consigneeId', '');
+        setInputValueById('dispatchNo', '');
+
+        var endPicker = $("#toDate").data("kendoDatePicker");
+        endPicker.min(new Date(1900, 0, 1)); // Setting defaults
+        endPicker.max(new Date(2099, 11, 31));
+
+        var startPicker = $("#fromDate").data("kendoDatePicker");
+        startPicker.min(new Date(1900, 0, 1)); // Setting defaults
+        startPicker.max(new Date(2099, 11, 31));
+
+        readKendoGrid('dispatchGrid');
+    }
+
+    function onReport(e) {
+        e.preventDefault();
+        var tr = $(e.target).closest("tr");
+        var data = this.dataItem(tr);
+        if (data != null) {
+            var urllink = '@Url.Action("GetDispatchReport", "Dispatch")';
+            var window = $("#wDispatchReport").data("kendoWindow");
+            window.refresh({
+                url: urllink,
+                data: { "dispatchId": data.DispatchId }
+            });
+            window.center();
+            window.open();
+
+        }
+    }
+
+    function onReportList(e) {
+            e.preventDefault();
+            var tr = $(e.target).closest("tr");
+            var data = this.dataItem(tr);
+            if (data != null) {
+                var urllink = '@Url.Action("GetDispatchReportList", "Dispatch")';
+                var window = $("#wDispatchReportList").data("kendoWindow");
+                window.refresh({
+                    url: urllink,
+                    data: {
+                        "dispatchId": data.DispatchId,
+                        "dispatchNo": data.DispatchNo,
+                        "dispatchDate": convertDateToString(data.DispatchDate)
+                    }
+                });
+                window.center();
+                window.open();
+            }
+    }
+
+    function startChange() {
+        var endPicker = $("#toDate").data("kendoDatePicker"),
+            startDate = this.value();
+
+        if (startDate) {
+            startDate = new Date(startDate);
+            startDate.setDate(startDate.getDate());
+            endPicker.min(startDate);
+        } else if (!endPicker.value()) {   // You said both
+            endPicker.min(new Date(1900, 0, 1)); // Setting defaults
+            endPicker.max(new Date(2099, 11, 31));
+            this.min(new Date(1900, 0, 1));
+            this.max(new Date(2099, 11, 31));
+        }
+    }
+
+    function endChange() {
+        var startPicker = $("#fromDate").data("kendoDatePicker"),
+            endDate = this.value();
+
+        if (endDate) {
+            endDate = new Date(endDate);
+            endDate.setDate(endDate.getDate());
+            startPicker.max(endDate);
+        }
+        else if (!startPicker.value()) {
+            startPicker.min(new Date(1900, 0, 1)); // Setting defaults
+            startPicker.max(new Date(2099, 11, 31));
+            this.min(new Date(1900, 0, 1));
+            this.max(new Date(2099, 11, 31));
+        }
+    }
+</script>

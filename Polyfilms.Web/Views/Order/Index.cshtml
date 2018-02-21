@@ -1,0 +1,295 @@
+﻿@using PolyFilms.Data.Models
+@using System.Collections
+@using PolyFilms.Common
+
+@{
+    ViewBag.Title = "Work Order";
+}
+
+<div class="page-title">
+    <div>
+        <h1><i class="fa fa-clipboard"></i> Work Orders </h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="fa fa-search"></i>Search</h3>
+                <div class="box-tool">
+                    <a data-action="collapse" href="#"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+            <div class="box-content">
+                <div class="btn-toolbar">
+                    <label class="col-lg-2 control-label">From date</label>
+
+                    <label class="col-lg-2 control-label">To date</label>
+
+                    <label class="col-lg-2 control-label">Order No</label>
+
+                    <label class="col-lg-2 control-label">Buyer</label>
+
+                    <label class="col-lg-2 control-label">Consignee</label>
+
+                    <label class="col-lg-2 control-label">Order Status</label>
+
+                </div>
+
+                <div class="btn-toolbar">
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().DatePicker()
+                              .Name("fromDate")
+                              .Events(e => e.Change("startChange"))
+                              .HtmlAttributes(new { @style = "width:100% !important", @tabindex = 1 }))
+                    </div>
+
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().DatePicker()
+                              .Name("toDate")
+                              .Events(e => e.Change("endChange"))
+                              .HtmlAttributes(new { @style = "width:100% !important", @tabindex = 2 }))
+                    </div>
+
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().TextBox().Name("orderNo"))
+                    </div>
+
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().ComboBox()
+                            .Name("buyerId")
+                            .HtmlAttributes(new { style = "width:100%;" })
+                            .BindTo(ViewBag.CustomerList)
+                            .DataTextField("Name")
+                            .DataValueField("CustomerId")
+                            .Placeholder("--Select Buyer--")
+                        )
+                    </div>
+
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().ComboBox()
+                            .Name("consigneeId")
+                            .HtmlAttributes(new { style = "width:100%;" })
+                            .BindTo(ViewBag.ConsigneeList)
+                            .DataTextField("Name")
+                            .DataValueField("ConsigneeId")
+                            .Placeholder("--Select Consignee--")
+                        )
+                    </div>
+                    
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().ComboBox()
+                              .Name("statusId")
+                              .HtmlAttributes(new { style = "width:100%;" })
+                              .BindTo(ViewBag.OrderStatusList)
+                              .DataTextField("Name")
+                              .DataValueField("OrderStatusId")
+                              .Placeholder("--Select Status--")
+                              )
+                    </div>
+                </div>
+            </div>
+            <div class="box-content">
+                <div class="btn-toolbar pull-right">
+                    <label class="col-lg-8 control-label"></label>
+                </div>
+
+                <div class="btn-toolbar">
+                    <div class="col-lg-8 controls pull-right">
+                        <input type="button" value="Reset" id="Reset" class="btn btn-primary pull-right" onclick="reset()" style="margin-left: 5px !important" />
+                        <input type="button" value="Search" class="btn btn-primary pull-right" onclick="search()" />
+                        
+                    </div>
+                </div>
+            </div>
+                    
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+
+        @(Html.Kendo().Grid<OrderModel>()
+                    .Name("orderGrid")
+                    .Columns(columns =>
+                    {
+                        
+                            if (AuthorizationHelper.CanEditDelete(ViewContext.RouteData.Values["Controller"].ToString()))
+                            {
+                                columns.Command(command =>
+                                {
+                                    if (AuthorizationHelper.CanEdit(ViewContext.RouteData.Values["Controller"].ToString()))
+                                    {
+                                        command.Custom("Edit").Text("<span class='k-icon k-i-edit' title='Edit'></span>").HtmlAttributes(new { @style = "margin:2px" }).Click("onEdit");
+                                    }
+                                    if (AuthorizationHelper.CanDelete(ViewContext.RouteData.Values["Controller"].ToString()))
+                                    {
+                                        command.Custom("Delete").Text("<span class='k-icon k-i-close' title='Delete'></span>").HtmlAttributes(new { @style = "margin:2px" }).Click("onDelete");
+                                    }
+                                }).Title("Action").HtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanEdit)
+                                    .HeaderHtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanEdit);
+                            }
+                        
+                        
+                        columns.Bound(d => d.OrderNo).Title(resLabels.OrderNo);
+                        columns.Bound(d => d.OrderDate).Format("{0:" + CommonHelper.DateFormate + "}");
+                        columns.ForeignKey(d => d.BuyerId, (IEnumerable)ViewBag.CustomerList, "CustomerId", "Name");
+                        columns.ForeignKey(d => d.ConsigneeId, (IEnumerable)ViewBag.ConsigneeList, "ConsigneeId", "Name");
+                        columns.Bound(d => d.DeliverySchedule).Format("{0:" + CommonHelper.DateFormate + "}");
+                        columns.ForeignKey(d => d.OrderStatusId, (IEnumerable)ViewBag.OrderStatusList, "OrderStatusId", "Name");
+                    })
+                    .ToolBar(toolbar =>
+                    {
+                        if (AuthorizationHelper.CanAdd(ViewContext.RouteData.Values["Controller"].ToString()))
+                        {
+                            toolbar.ClientTemplate("<a class='k-button k-button-icontext' onclick='addOrder()' href='javascript:void(0)'><span class='k-icon k-i-plus' title='Add'></span>Add</a>" +
+                                                   "<a role='button' class='k-button k-button-icontext k-grid-excel' href='javascript:void(0)'><span class='k-icon k-i-file-excel'></span>Export to Excel</a>");
+                        }
+                    })
+                    .Pageable(x =>
+                    {
+                        x.Refresh(true);
+                        x.PageSizes(WebHelper.PageSizes);
+                    })
+                    .Excel(excel => excel
+                        .FileName("Order List")
+                        .Filterable(true)
+                        .ProxyURL(Url.Action("Excel_Export_Save", "Home"))
+                    )
+                                      .Sortable(sortable => sortable.AllowUnsort(false))
+                                      .Filterable(filter => filter.Enabled(false))
+                                      .NoRecords()
+                                      .Events(e => e.DataBound("onDataBound"))
+                                      .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .ServerOperation(true)
+                                      .PageSize(WebHelper.PageSize)
+                                      .Model(model => model.Id(d => d.OrderId))
+                                      .Events(events => events.Error("onError(\"orderGrid\")"))
+                                      .Read(read => read.Action("KendoRead", "Order").Data("additionalInfo"))
+                ))
+    </div>
+</div>
+
+<script type="text/javascript">
+    function addOrder() {
+        window.location.href = '@Url.Action("Create", "Order")';
+    }
+
+    function onEdit(e) {
+        e.preventDefault();
+        var tr = $(e.target).closest("tr");
+        var data = this.dataItem(tr);
+        var urllink = '@Url.Action("Edit", "Order")';
+        if (data != null)
+            window.location.href = urllink + "?id=" + data.OrderId;
+    }
+
+    function onDelete(e) {
+        bootbox.confirm('Are you sure you want to delete this work order?', function (result) {
+            if (result === true) {
+                e.preventDefault();
+                var grid = $("#orderGrid").data("kendoGrid");
+                var tr = $(e.target).closest("tr");
+                var data = grid.dataItem(tr);
+                var url = '@Url.Action("KendoDestroy", "Order")';
+                if (data != null)
+                    callwebservice(url, 'orderId=' + data.OrderId, DeleteComplete, false, datatypeEnum.text, typeEnum.post);
+            }
+        }, 'popup-confirmation');
+    }
+
+    function DeleteComplete(returString) {
+        if (returString != null) {
+            if (returString !== "") {
+                showMessageOnly(returString, 'popup-error');
+            } else {
+                readKendoGrid('orderGrid');
+            }
+        }
+    }
+
+    function search() {
+        readKendoGrid('orderGrid');
+    }
+
+
+    function additionalInfo() {
+        return {
+            fromDate: getInputValueById('fromDate'),
+            toDate: getInputValueById('toDate'),
+            buyerId: getInputValueById('buyerId'),
+            consigneeId: getInputValueById('consigneeId'),
+            orderNo: getInputValueById('orderNo'),
+            statusId: getInputValueById('statusId')
+        }
+    }
+
+    function reset() {
+        setKendoDatePickerValue('fromDate', '');
+        setKendoDatePickerValue('toDate', '');
+        setKendComboboxValue('buyerId', '');
+        setKendComboboxValue('consigneeId', '');
+        setInputValueById('orderNo', '');
+        setKendComboboxValue('statusId', '');
+
+        var endPicker = $("#toDate").data("kendoDatePicker");
+        endPicker.min(new Date(1900, 0, 1)); // Setting defaults
+        endPicker.max(new Date(2099, 11, 31));
+
+        var startPicker = $("#fromDate").data("kendoDatePicker");
+        startPicker.min(new Date(1900, 0, 1)); // Setting defaults
+        startPicker.max(new Date(2099, 11, 31));
+
+        readKendoGrid('orderGrid');
+    }
+
+    function startChange() {
+        var endPicker = $("#toDate").data("kendoDatePicker"),
+            startDate = this.value();
+
+        if (startDate) {
+            startDate = new Date(startDate);
+            startDate.setDate(startDate.getDate());
+            endPicker.min(startDate);
+        } else if (!endPicker.value()) {   // You said both
+            endPicker.min(new Date(1900, 0, 1)); // Setting defaults
+            endPicker.max(new Date(2099, 11, 31));
+            this.min(new Date(1900, 0, 1));
+            this.max(new Date(2099, 11, 31));
+        }
+    }
+
+    function endChange() {
+        var startPicker = $("#fromDate").data("kendoDatePicker"),
+            endDate = this.value();
+
+        if (endDate) {
+            endDate = new Date(endDate);
+            endDate.setDate(endDate.getDate());
+            startPicker.max(endDate);
+        }
+        else if (!startPicker.value()) {
+            startPicker.min(new Date(1900, 0, 1)); // Setting defaults
+            startPicker.max(new Date(2099, 11, 31));
+            this.min(new Date(1900, 0, 1));
+            this.max(new Date(2099, 11, 31));
+        }
+    }
+
+    function onDataBound(e) {
+        var grid = $("#orderGrid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            
+            if ((gridData[i].OrderStatusId === @((short)Enums.OrderStatus.Dispatched)) || (gridData[i].OrderStatusId === @((short)Enums.OrderStatus.Invoiced))) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var deleteButton = $(currenRow).find(".k-grid-Delete");
+                deleteButton.hide();
+            }
+        }
+    }
+</script>

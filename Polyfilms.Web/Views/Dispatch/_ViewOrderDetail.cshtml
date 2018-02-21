@@ -1,0 +1,29 @@
+﻿@model PolyFilms.Data.Models.DispatchModel
+@using System.Collections
+
+
+
+
+@(Html.Kendo().Grid<PolyFilms.Data.Models.OrderDetailModel>()
+                                .Name("orderdetailGrid")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(d => d.ProductId, (IEnumerable)ViewBag.ProductList, "ProductId", "Name").HtmlAttributes(WebHelper.StatusColumnStyle).HeaderHtmlAttributes(WebHelper.StatusColumnStyle) ;
+                                    columns.Bound(d => d.Width).HtmlAttributes(WebHelper.SmallColumnStyle).HeaderHtmlAttributes(WebHelper.SmallColumnStyle);
+                                    columns.Bound(d => d.Thickness).HtmlAttributes(WebHelper.SmallColumnStyle).HeaderHtmlAttributes(WebHelper.SmallColumnStyle);
+                                    columns.Bound(d => d.Od).HtmlAttributes(WebHelper.SmallColumnStyle).HeaderHtmlAttributes(WebHelper.SmallColumnStyle);
+                                    columns.Bound(d => d.Quantity).HtmlAttributes(WebHelper.SmallColumnStyle).HeaderHtmlAttributes(WebHelper.SmallColumnStyle);
+                                })
+
+                                .Sortable(sortable => sortable.AllowUnsort(false))
+                                .Filterable(filter => filter.Enabled(false))
+                                .NoRecords()
+                                .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .ServerOperation(true)
+                                .Model(model => model.Id(d => d.OrderDetailId))
+                                .Events(events => events.Error("onError(\"orderdetailGrid\")"))
+                                .Read(read => read.Action("KendoReadOrderDetail", "Dispatch").Data("additionalViewInfo"))
+                          ))
+
+

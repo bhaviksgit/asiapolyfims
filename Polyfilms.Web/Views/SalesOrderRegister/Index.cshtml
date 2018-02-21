@@ -1,0 +1,162 @@
+﻿@using PolyFilms.Data.CustomModel
+@using PolyFilms.Common
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="fa fa-search"></i>Search</h3>
+                <div class="box-tool">
+                    <a data-action="collapse" href="#"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+            <div class="box-content">
+                <div class="btn-toolbar">
+                    <label class="col-lg-2 control-label">Month</label>
+
+                    <label class="col-lg-10 control-label"></label>
+                </div>
+
+                <div class="btn-toolbar">
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().DatePicker()
+                              .Name("month")
+                              .Start(CalendarView.Year)
+                              .Depth(CalendarView.Year)
+                              .Format("MMMM yyyy")
+                              .Value(DateTime.Now)
+                              .DateInput()
+                              .HtmlAttributes(new { style = "width: 100%" }))
+                    </div>
+                    <div class="col-lg-8 controls pull-right">
+                        <input type="button" value="Reset" id="Reset" class="btn btn-primary pull-right" onclick="reset()" style="margin-left: 5px !important" />
+                        <input type="button" value="Search" class="btn btn-primary pull-right" onclick="search()" />
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="box">
+    <div class="box-title">
+        <h3>
+            <i class="fa fa-bars"></i>Sales Order Register
+        </h3>
+    </div>
+    <div class="box-content">
+        
+
+        <div class="row">
+            <div class="col-xs-12">
+
+                @(Html.Kendo().Grid<SalesOrderDetailModel>()
+                      .Name("salesorderGrid")
+                      .Columns(columns =>
+                      {
+
+                          columns.Bound(d => d.OrderNo);
+                          columns.Bound(d => d.OrderDate).Format("{0:" + CommonHelper.DateFormate + "}");
+                          columns.Bound(d => d.Buyer);
+                          columns.Bound(d => d.City);
+                          columns.Bound(d => d.ProductId).Visible(false);
+                          columns.Bound(d => d.Product);
+                          columns.Bound(d => d.Micron);
+                          columns.Bound(d => d.Width);
+                          columns.Bound(d => d.Quantity);
+                          columns.Bound(d => d.TotalSlittingDone);
+                          columns.Bound(d => d.DispatchedQty);
+                          columns.Bound(d => d.RemainigDispatchQty);
+                          columns.Bound(d => d.TotalRemainigSlitting);
+                          columns.Bound(d => d.SlittingQtyInStock);
+                          columns.Bound(d => d.SlittingToBeProduce);
+
+
+                      })
+
+                      .Pageable(x =>
+                      {
+                          x.Refresh(true);
+                          x.PageSizes(WebHelper.PageSizes);
+                      })
+                      .ToolBar(tools => tools.Excel())
+                      .Excel(excel => excel
+                          .FileName("Sales Order Register")
+                          .Filterable(true)
+                          .ProxyURL(Url.Action("Excel_Export_Save", "Home"))
+                      )
+                      .Sortable(sortable => sortable.AllowUnsort(false))
+                      .Filterable(filter => filter.Enabled(false))
+                      .NoRecords()
+                      .ClientDetailTemplateId("template")
+
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .ServerOperation(true)
+                          .PageSize(WebHelper.PageSize)
+                          .Model(model => model.Id(d => d.OrderId))
+                          .Events(events => events.Error("onError(\"salesorderGrid\")"))
+                          .Read(read => read.Action("KendoReadSalesOrderDetail", "SalesOrderRegister").Data("additionalInfo"))
+                      ))
+            </div>
+        </div>
+
+
+        <script id="template" type="text/kendo-tmpl">
+        @(Html.Kendo().Grid<SalesOrderModel>()
+              .Name("salesgrid_#=OrderId##=ProductId#")
+              .Columns(columns =>
+              {
+                  columns.Bound(d => d.SlittingRollNo);
+                  columns.Bound(d => d.FilmType);
+                  columns.Bound(d => d.Micron);
+                  columns.Bound(d => d.DispatchNo);
+                  columns.Bound(d => d.DispatchDate).Format("{0:" + CommonHelper.DateFormate + "}");
+                  columns.Bound(d => d.Quantity);
+                  columns.Bound(d => d.InvoiceNo);
+                  columns.Bound(d => d.InvoiceDate).Format("{0:" + CommonHelper.DateFormate + "}");
+
+              })
+              .ToolBar(tools => tools.Excel())
+              .NoRecords()
+              .Excel(excel => excel
+                  .FileName("Sales Order Register#=OrderNo#")
+                  .Filterable(true)
+                  .ProxyURL(Url.Action("Excel_Export_Save", "Home"))
+              )
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .ServerOperation(true)
+                  .Model(model => model.Id(d => d.SlittingRollNo))
+                  .Events(events => events.Error("onError(\"salesgrid_#=OrderId##=ProductId#\")"))
+                  .Read(read => read.Action("KendoReadDettail", "SalesOrderRegister", new {orderId = "#=OrderId#", productId = "#=ProductId#"}))
+
+              ).ToClientTemplate())
+    </script>
+    </div>
+</div>
+
+<script>
+    function reset() {
+
+        var todayDate = kendo.toString(kendo.parseDate(new Date()), 'MMMM yyyy');
+        setKendoDatePickerValue('month', todayDate);
+
+        //var datePicker = $("#month").data("kendoDatePicker");
+        
+        //datePicker.setDate(new Date().getDate());
+        readKendoGrid('salesorderGrid');
+    }
+
+    function search() {
+        readKendoGrid('salesorderGrid');
+    }
+
+    function additionalInfo() {
+        return {
+            month: convertDateToString(getKendoDatePickerValue('month'))
+    }
+    }
+</script>

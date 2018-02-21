@@ -1,0 +1,330 @@
+﻿@using Kendo.Mvc.UI;
+@model PolyFilms.Data.Models.JumboModel
+
+@{
+    ViewBag.Title = "Jumbo";
+}
+
+<div class="page-title">
+    <div>
+        <h1><i class="fa fa-bars"></i>Manage Jumbo </h1>
+        @if (Model.IsJumboUsed)
+        {
+            <h4>This Jumbo is already In Use, So you can not change it.</h4>
+        }
+
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+
+        @using (Html.BeginForm("SaveJumbo", "Jumbo", FormMethod.Post, new { @class = "form-horizontal", @id = "validation-form" }))
+        {
+            <div class="box">
+                
+                <div class="box-content">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            @if (Model.JumboId > 0)
+                            {
+                                <div class="form-group">
+                                    <div class="col-sm-12 col-lg-12" style="font-weight: bold !important; font-size: 18px;">
+                                        @Html.DisplayFor(m => m.JumboNo)
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    @if (!Model.IsJumboUsed)
+                    {
+                        <div class="col-lg-6 text-right">
+                            <input type="submit" class="btn btn-primary" value="Save" name="create" tabindex="15">
+                            <input type="submit" class="btn btn-primary" value="Save & Continue" name="create" tabindex="16">
+                            @if (Model.JumboId > 0 && Model.StatusId == null)
+                            {
+                                <input type="submit" class="btn btn-primary" value="Ready For Test" name="create" tabindex="16">
+
+                            }
+                            <a href="@Url.Action("Create", "Jumbo")" class="btn btn-primary" tabindex="17">New</a>
+                            <a href="@Url.Action("Index", "Jumbo")" class="btn btn-primary" tabindex="18">Back</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-lg-6 text-right">
+                            
+                            <a href="@Url.Action("Index", "Jumbo")" class="btn btn-primary" tabindex="14">Back</a>
+                        </div>
+                    }
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="box">
+                <div class="box-title">
+                    <h3>
+                        <i class="fa fa-bars"></i>Jumbo Details
+                    </h3>
+                </div>
+                <div class="box-content">
+                    @Html.HiddenFor(m => m.JumboId)
+                    @Html.HiddenFor(m => m.JumboNo)
+                    @Html.HiddenFor(m => m.Day)
+                    @Html.HiddenFor(m => m.Month)
+                    @Html.HiddenFor(m => m.Year)
+                    @Html.HiddenFor(m => m.SequenceNo)
+                    @Html.HiddenFor(m => m.CreatedDate)
+                    @Html.HiddenFor(m => m.StatusId)
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(x => x.JumboDate, new {@class = "col-sm-6 col-lg-3 control-label"})
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @if (Model.JumboId > 0)
+                                    {
+                                        @Html.Kendo().DatePickerFor(m => m.JumboDate).HtmlAttributes(new {@tabindex = 1, @readonly = "readonly"})
+                                    }
+                                    else
+                                    {
+                                        @Html.Kendo().DatePickerFor(m => m.JumboDate).HtmlAttributes(new {@tabindex = 1})
+                                        @Html.ValidationMessageFor(x => x.JumboDate)
+                                    }
+
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ShiftId, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @(Html.Kendo().ComboBoxFor(m => m.ShiftId)
+                                          .Value(Model.ShiftId == 0 ? string.Empty : Model.ShiftId.ToString())
+                                          .Placeholder("--Select Shift --")
+                                          .DataTextField("Name")
+                                          .DataValueField("ShiftId")
+                                          .HtmlAttributes(new { @tabindex = 3 })
+                                          .DataSource(source =>
+                                          {
+                                              source.Read(read =>
+                                              {
+                                                  read.Action("GetShiftList", "Common");
+                                              });
+                                          })
+                                          .Events(e => e.Change("OnchangetoClearIndexCommon")))
+
+                                    @Html.ValidationMessageFor(m => m.ShiftId)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.TimeIn, new {@class = "col-sm-6 col-lg-3 control-label"})
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().TimePickerFor(m => m.TimeIn).Events(e => e.Change("onTimeINChange")).HtmlAttributes(new {@tabindex = 4})
+                                    @Html.ValidationMessageFor(m => m.TimeIn)
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.TimeOut, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().TimePickerFor(m => m.TimeOut).Events(e => e.Change("onTimeOUTChange")).HtmlAttributes(new { @tabindex = 6 })
+                                    @Html.ValidationMessageFor(m => m.TimeOut)
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ShiftInchargeId, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @(Html.Kendo().ComboBoxFor(m => m.ShiftInchargeId)
+                                          .Value(Model.ShiftInchargeId == 0 ? string.Empty : Model.ShiftInchargeId.ToString())
+                                          .Placeholder("--Select Shift Incharge --")
+                                          .DataTextField("Username")
+                                          .DataValueField("UserId")
+                                          .HtmlAttributes(new { @tabindex = 8 })
+                                          .DataSource(source =>
+                                          {
+                                              source.Read(read =>
+                                              {
+                                                  read.Action("GetUserList", "Common");
+                                              });
+                                          })
+                                          .Events(e => e.Change("OnchangetoClearIndexCommon")))
+
+                                    @Html.ValidationMessageFor(m => m.ShiftInchargeId)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Winder, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().TextBoxFor(m => m.Winder).HtmlAttributes(new { @class = "k-textbox", @tabindex = 10, @style = "text-transform:uppercase" })
+                                    @Html.ValidationMessageFor(m => m.Winder)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Speed, new {@class = "col-sm-6 col-lg-3 control-label"})
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().NumericTextBoxFor(m => m.Speed).Min(0).HtmlAttributes(new {@tabindex = 11}).Spinners(false)
+                                    @Html.ValidationMessageFor(m => m.Speed)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.CoreNo, new {@class = "col-sm-6 col-lg-3 control-label"})
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().TextBoxFor(m => m.CoreNo).HtmlAttributes(new {@class = "k-textbox", @tabindex = 13 })
+                                    @Html.ValidationMessageFor(m => m.CoreNo)
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ProductId, new {@class = "col-sm-6 col-lg-3 control-label"})
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @(Html.Kendo().ComboBoxFor(m => m.ProductId)
+                                          .Value(Model.ProductId == 0 ? string.Empty : Model.ProductId.ToString())
+                                          .Placeholder("--Select Product --")
+                                          .DataTextField("Name")
+                                          .DataValueField("ProductId")
+                                          .HtmlAttributes(new {@tabindex = 2})
+                                          .DataSource(source =>
+                                          {
+                                              source.Read(read =>
+                                              {
+                                                  read.Action("GetProductList", "Common");
+                                              });
+                                          })
+                                          .Events(e => e.Change("onchangeProduct")))
+
+                                    @Html.ValidationMessageFor(m => m.ProductId)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Thickness, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().NumericTextBoxFor(m => m.Thickness).Min(0).HtmlAttributes(new { @readonly = "readonly" }).Spinners(false)
+                                    @Html.ValidationMessageFor(m => m.Thickness)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Width, new {@class = "col-sm-6 col-lg-3 control-label"})
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().NumericTextBoxFor(m => m.Width).Min(0).HtmlAttributes(new {@tabindex = 5}).Spinners(false).Events(e => e.Change("calculateWeight"))
+                                    @Html.ValidationMessageFor(m => m.Width)
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Length, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().NumericTextBoxFor(m => m.Length).Min(0).HtmlAttributes(new { @tabindex = 7 }).Spinners(false).Events(e=>e.Change("calculateWeight"))
+                                    @Html.ValidationMessageFor(m => m.Length)
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.TreatmentId, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @(Html.Kendo().ComboBoxFor(m => m.TreatmentId)
+                                          .Value(Model.TreatmentId == 0 ? string.Empty : Model.TreatmentId.ToString())
+                                          .Placeholder("--Select Treatment --")
+                                          .DataTextField("Name")
+                                          .DataValueField("TreatmentId")
+                                          .HtmlAttributes(new { @tabindex = 9 })
+                                          .DataSource(source =>
+                                          {
+                                              source.Read(read =>
+                                              {
+                                                  read.Action("GetTreatmentList", "Common");
+                                              });
+                                          })
+                                          .Events(e => e.Change("OnchangetoClearIndexCommon")))
+
+                                    @Html.ValidationMessageFor(m => m.TreatmentId)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Weight, new {@class = "col-sm-6 col-lg-3 control-label"})
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().NumericTextBoxFor(m => m.Weight).Min(0).HtmlAttributes(new { @readonly="readonly"}).Spinners(false)
+                                    @Html.ValidationMessageFor(m => m.Weight)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.LineNo, new {@class = "col-sm-6 col-lg-3 control-label"})
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @if (Model.JumboId > 0)
+                                    {
+                                        @Html.Kendo().TextBoxFor(m => m.LineNo).HtmlAttributes(new {@class = "k-textbox", @tabindex = 12, @readonly = "readonly", @style = "text-transform:uppercase" })
+                                    }
+                                    else
+                                    {
+                                        @Html.Kendo().TextBoxFor(m => m.LineNo).HtmlAttributes(new {@class = "k-textbox", @tabindex = 12, @style = "text-transform:uppercase" })
+                                        @Html.ValidationMessageFor(m => m.LineNo)
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Remarks, new {@class = "col-sm-6 col-lg-3 control-label"})
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.TextAreaFor(model => model.Remarks, new {@class = "k-textbox", style = "width: 100%;", @tabindex = 14})
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+<script>
+    $(function () {
+        setupFormValidation('validation-form');
+        setFocusById('JumboDate');
+    });
+
+    function onchangeProduct(e) {
+        if (this.value && this.selectedIndex === -1) {
+            this.value("");
+            return;
+        }
+        
+        var comboBox = e.sender.dataItem().Thickness;
+        setkendoNumericTextBoxValue('Thickness', comboBox);
+        calculateWeight();
+    }
+
+    function onTimeINChange(e) {
+        var kendoTime = $("#TimeIn").data('kendoTimePicker').value();
+        var newTime = new Date(kendoTime.getTime() + 30 * 60000);
+        $("#TimeOut").data("kendoTimePicker").min(newTime);
+        $("#TimeOut").data("kendoTimePicker").value('');
+    }
+
+    function onTimeOUTChange() {
+        var kendoTime = $("#TimeOut").data('kendoTimePicker').value();
+        var newTime = new Date(kendoTime.getTime() - 30 * 60000);
+        $("#TimeIn").data("kendoTimePicker").max(newTime);
+    }
+
+    function calculateWeight() {
+        var thickness = getkendoNumericTextBoxValue('Thickness') == null ? 0 : getkendoNumericTextBoxValue('Thickness');
+        var length = getkendoNumericTextBoxValue('Length') == null ? 0 : getkendoNumericTextBoxValue('Length');
+        var width = getkendoNumericTextBoxValue('Width') == null ? 0 : getkendoNumericTextBoxValue('Width');
+        var weight = ((thickness - 0.2) * length * width * 0.905) / 1000000;
+        setkendoNumericTextBoxValue('Weight', weight);
+    }
+</script>
+
+

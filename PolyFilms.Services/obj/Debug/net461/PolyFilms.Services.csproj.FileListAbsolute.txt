@@ -1,0 +1,4 @@
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Services\obj\Debug\net461\PolyFilms.Services.csprojResolveAssemblyReference.cache
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Services\obj\Debug\net461\PolyFilms.Services.csproj.CoreCompileInputs.cache
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Services\obj\Debug\net461\PolyFilms.Services.AssemblyInfoInputs.cache
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Services\obj\Debug\net461\PolyFilms.Services.AssemblyInfo.cs

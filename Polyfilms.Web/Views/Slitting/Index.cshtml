@@ -1,0 +1,334 @@
+﻿@using PolyFilms.Data.Models
+@using System.Collections
+@using PolyFilms.Common
+
+@{
+    ViewBag.Title = "Slitting";
+}
+<div class="page-title">
+    <div>
+        <h1><i class="fa fa-database"></i> Slittings </h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="fa fa-search"></i>Search</h3>
+                <div class="box-tool">
+                    <a data-action="collapse" href="#"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+            <div class="box-content">
+                <div class="btn-toolbar">
+                    <label class="col-lg-2 control-label">From date</label>
+
+                    <label class="col-lg-2 control-label">To date</label>
+
+                    <label class="col-lg-2 control-label">Product</label>
+
+                    <label class="col-lg-2 control-label">Slitting Roll No</label>
+
+                    <label class="col-lg-2 control-label">Order No</label>
+
+                    <label class="col-lg-2 control-label">Status</label>
+
+                </div>
+
+                <div class="btn-toolbar">
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().DatePicker()
+                              .Name("fromDate")
+                              .Events(e => e.Change("startChange"))
+                              .HtmlAttributes(new { @style = "width:100% !important", @tabindex = 1 }))
+                    </div>
+
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().DatePicker()
+                              .Name("toDate")
+                              .Events(e => e.Change("endChange"))
+                              .HtmlAttributes(new { @style = "width:100% !important", @tabindex = 2 }))
+                    </div>
+
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().ComboBox()
+                            .Name("productId")
+                            .HtmlAttributes(new { style = "width:100%;" })
+                            .BindTo(ViewBag.ProductList)
+                            .DataTextField("Name")
+                            .DataValueField("ProductId")
+                            .Placeholder("--Select Product--")
+                        )
+                    </div>
+
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().TextBox().Name("slittingRollno"))
+                    </div>
+
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().TextBox().Name("orderNo"))
+                    </div>
+
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().ComboBox()
+                            .Name("statusId")
+                            .HtmlAttributes(new { style = "width:100%;" })
+                            .BindTo(ViewBag.QualityList)
+                            .DataTextField("Name")
+                            .DataValueField("SlittingStatusId")
+                            .Placeholder("--Select Quality--")
+                        )
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="box-content">
+                <div class="btn-toolbar pull-right">
+                    <label class="col-lg-8 control-label"></label>
+                </div>
+
+                <div class="btn-toolbar">
+                    <div class="col-lg-8 controls pull-right">
+                        <input type="button" value="Reset" id="Reset" class="btn btn-primary pull-right" onclick="reset()" style="margin-left: 5px !important" />
+                        <input type="button" value="Search" class="btn btn-primary pull-right" onclick="search()" />
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+
+        @(Html.Kendo().Grid<SlittingModel>()
+                    .Name("slittingGrid")
+                    .Columns(columns =>
+                    {
+                        if (AuthorizationHelper.CanEditDelete(ViewContext.RouteData.Values["Controller"].ToString()))
+                        {
+                            columns.Command(command =>
+                            {
+                                if (AuthorizationHelper.CanEdit(ViewContext.RouteData.Values["Controller"].ToString()))
+                                {
+                                    command.Custom("Edit").Text("<span class='k-icon k-i-edit' title='Edit'></span>").HtmlAttributes(new { @style = "margin:2px" }).Click("onEdit");
+                                }
+                                if (AuthorizationHelper.CanDelete(ViewContext.RouteData.Values["Controller"].ToString()))
+                                {
+                                    command.Custom("Delete").Text("<span class='k-icon k-i-close' title='Delete'></span>").HtmlAttributes(new { @style = "margin:2px" }).Click("onDelete");
+                                }
+                                command.Custom("Report").Text("<span class='k-icon k-i-print' title='Report'></span>").HtmlAttributes(new { @style = "margin:2px" }).Click("onReport");
+                            }).Title("Action").HtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanStatus)
+                               .HeaderHtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanStatus);
+                        }
+                        columns.Bound(d => d.SlittingDate).Format("{0:" + CommonHelper.DateFormate + "}");
+                        columns.Bound(d => d.SlittingRollNo);
+                        columns.ForeignKey(d => d.JumboId, (IEnumerable)ViewBag.JumboList, "JumboId", "JumboNo");
+                        columns.ForeignKey(d => d.OrderId, (IEnumerable)ViewBag.OrderList, "OrderId", "OrderNo");
+                        columns.ForeignKey(d => d.ProductId, (IEnumerable)ViewBag.ProductList, "ProductId", "Name");
+                        columns.Bound(d => d.Thickness);
+                        columns.Bound(d => d.Location);
+                        columns.Bound(d => d.Length);
+                        columns.Bound(d => d.Width);
+                        columns.Bound(d => d.Grossweight);
+                        columns.Bound(d => d.CoreWeight);
+                        columns.Bound(d => d.Netweight);
+                        columns.ForeignKey(d => d.Quality, (IEnumerable)ViewBag.QualityList, "SlittingStatusId", "Name");
+                        columns.Bound(d => d.Difference);
+                    })
+                    .ToolBar(toolbar =>
+                    {
+                        if (AuthorizationHelper.CanAdd(ViewContext.RouteData.Values["Controller"].ToString()))
+                        {
+                            toolbar.ClientTemplate("<a class='k-button k-button-icontext' onclick='addPrimarySlitting()' href='javascript:void(0)'><span class='k-icon k-i-plus' title='Add'></span>Add Primary Slitting</a>" +
+                                "<a class='k-button k-button-icontext' onclick='addSecondarySlitting()' href='javascript:void(0)'><span class='k-icon k-i-plus' title='Add'></span>Add Secondary Slitting</a>" +
+                                                   "<a role='button' class='k-button k-button-icontext k-grid-excel' href='javascript:void(0)'><span class='k-icon k-i-file-excel'></span>Export to Excel</a>");
+                        }
+                    })
+                    .Pageable(x =>
+                    {
+                        x.Refresh(true);
+                        x.PageSizes(WebHelper.PageSizes);
+                    })
+                    .Excel(excel => excel
+                        .FileName("Slitting List")
+                        .Filterable(true)
+                        .ProxyURL(Url.Action("Excel_Export_Save", "Home"))
+                    )
+                                      .Sortable(sortable => sortable.AllowUnsort(false))
+                                      .Filterable(filter => filter.Enabled(false))
+                                      .NoRecords()
+                                      .Events(e => e.DataBound("onDataBound"))
+                                      .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .ServerOperation(true)
+                                      .PageSize(WebHelper.PageSize)
+                                      .Model(model => model.Id(d => d.SlittingId))
+                                      .Events(events => events.Error("onError(\"slittingGrid\")"))
+                                      .Read(read => read.Action("KendoRead", "Slitting").Data("additionalInfo"))
+                ))
+    </div>
+</div>
+
+@(Html.Kendo().Window()
+      .Name("wSlittingReport")
+      .Title("Slitting Report")
+      .Visible(false)
+      .Draggable(true)
+      .Modal(true)
+      .Width(900)
+      .Height(720))
+
+
+<script>
+    function addPrimarySlitting() {
+        window.location.href = '@Url.Action("Create", "Slitting",new { @type = "P"})';
+    }
+
+    function addSecondarySlitting() {
+        window.location.href = '@Url.Action("Create", "Slitting", new { @type = "S" })';
+    }
+
+
+    function onEdit(e) {
+        e.preventDefault();
+        var tr = $(e.target).closest("tr");
+        var data = this.dataItem(tr);
+        var urllink = '@Url.Action("Edit", "Slitting")';
+        if (data != null)
+            window.location.href = urllink + "?id=" + data.SlittingId;
+    }
+
+    function onDelete(e) {
+        bootbox.confirm('Are you sure you want to delete this slitting?', function (result) {
+            if (result === true) {
+                e.preventDefault();
+                var grid = $("#slittingGrid").data("kendoGrid");
+                var tr = $(e.target).closest("tr");
+                var data = grid.dataItem(tr);
+                var url = '@Url.Action("KendoDestroy", "Slitting")';
+                if (data != null)
+                    callwebservice(url, 'slittingId=' + data.SlittingId, DeleteComplete, false, datatypeEnum.text, typeEnum.post);
+            }
+        }, 'popup-confirmation');
+    }
+
+    function DeleteComplete(returString) {
+        if (returString != null) {
+            if (returString !== "") {
+                showMessageOnly(returString, 'popup-error');
+            } else {
+                readKendoGrid('slittingGrid');
+            }
+        }
+    }
+
+    function additionalInfo() {
+        return {
+            fromDate: getInputValueById('fromDate'),
+            toDate: getInputValueById('toDate'),
+            productId: getInputValueById('productId'),
+            slittingRollno: getInputValueById('slittingRollno'),
+            orderNo: getInputValueById('orderNo'),
+            statusId: getInputValueById('statusId')
+        }
+
+    }
+
+    function search() {
+        readKendoGrid('slittingGrid');
+    }
+
+
+    function reset() {
+        setKendoDatePickerValue('fromDate', '');
+        setKendoDatePickerValue('toDate', '');
+        setKendComboboxValue('productId', '');
+        setInputValueById('slittingRollno', '');
+        setInputValueById('orderNo', '');
+        setKendComboboxValue('statusId', '');
+
+        var endPicker = $("#toDate").data("kendoDatePicker");
+        endPicker.min(new Date(1900, 0, 1)); // Setting defaults
+        endPicker.max(new Date(2099, 11, 31));
+
+        var startPicker = $("#fromDate").data("kendoDatePicker");
+        startPicker.min(new Date(1900, 0, 1)); // Setting defaults
+        startPicker.max(new Date(2099, 11, 31));
+
+
+        readKendoGrid('slittingGrid');
+    }
+
+
+    function onReport(e) {
+        e.preventDefault();
+        var tr = $(e.target).closest("tr");
+        var data = this.dataItem(tr);
+        if (data != null) {
+            var urllink = '@Url.Action("GetSlittingReport", "Slitting")';
+            var window = $("#wSlittingReport").data("kendoWindow");
+            window.refresh({
+                url: urllink,
+                data: { "slittingId": data.SlittingId }
+            });
+            window.center();
+            window.open();
+
+        }
+    }
+
+
+    function startChange() {
+        var endPicker = $("#toDate").data("kendoDatePicker"),
+            startDate = this.value();
+
+        if (startDate) {
+            startDate = new Date(startDate);
+            startDate.setDate(startDate.getDate());
+            endPicker.min(startDate);
+        } else if (!endPicker.value()) {   // You said both
+            endPicker.min(new Date(1900, 0, 1)); // Setting defaults
+            endPicker.max(new Date(2099, 11, 31));
+            this.min(new Date(1900, 0, 1));
+            this.max(new Date(2099, 11, 31));
+        }
+    }
+
+    function endChange() {
+        var startPicker = $("#fromDate").data("kendoDatePicker"),
+            endDate = this.value();
+
+        if (endDate) {
+            endDate = new Date(endDate);
+            endDate.setDate(endDate.getDate());
+            startPicker.max(endDate);
+        }
+        else if (!startPicker.value()) {
+            startPicker.min(new Date(1900, 0, 1)); // Setting defaults
+            startPicker.max(new Date(2099, 11, 31));
+            this.min(new Date(1900, 0, 1));
+            this.max(new Date(2099, 11, 31));
+        }
+    }
+
+    function onDataBound() {
+        var grid = $("#slittingGrid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            
+            if (gridData[i].IsSlittingUsed) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var deleteButton = $(currenRow).find(".k-grid-Delete");
+                deleteButton.hide();
+            }
+        }
+    }
+
+    
+</script>

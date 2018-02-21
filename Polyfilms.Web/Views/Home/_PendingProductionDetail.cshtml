@@ -1,0 +1,47 @@
+﻿@using PolyFilms.Data.CustomModel
+
+<div class="row">
+    <div class="col-md-12">
+
+        @(Html.Kendo().Grid<PendingProductionDataModel>()
+                    .Name("pendingProductionGrid")
+                    .Columns(columns =>
+                    {
+
+                        columns.Bound(d => d.FilmType);
+                        columns.Bound(d => d.Thickness);
+                        columns.Bound(d => d.TotalQty);
+                        columns.Bound(d => d.RemainingJumbo);
+                        columns.Bound(d => d.TotalSlittStock);
+                        columns.Bound(d => d.OrderdQty);
+                        columns.Bound(d => d.FullFilledQty);
+                        columns.Bound(d => d.OrderedToFullFilled);
+                        columns.Bound(d => d.Pending);
+
+                    })
+                    .ToolBar(tools => tools.Excel())
+                    .Pageable(x =>
+                    {
+                        x.Refresh(true);
+                        x.PageSizes(WebHelper.PageSizes);
+                    })
+                    .Excel(excel => excel
+                        .FileName("Pending Production Detail")
+                        .Filterable(true)
+                        .ProxyURL(Url.Action("Excel_Export_Save", "Home"))
+                    )
+                    .Sortable(sortable => sortable.AllowUnsort(false))
+                    .Filterable(filter => filter.Enabled(false))
+                    .NoRecords()
+
+
+                    .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .ServerOperation(false)
+                    .PageSize(WebHelper.PageSize)
+                    
+                    .Events(events => events.Error("onError(\"pendingProductionGrid\")"))
+                    .Read(read => read.Action("KendoReadPendingProduction", "Home"))
+                ))
+    </div>
+</div>

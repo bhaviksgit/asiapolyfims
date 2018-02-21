@@ -1,0 +1,119 @@
+﻿@model PolyFilms.Data.Models.ConsigneeModel
+
+<div class="k-edit-form-container" id="frmItems">
+
+    @Html.HiddenFor(m=>m.BuyerId , new { id = "strCBuyerId" })
+    <div class="k-edit-label">
+        @Html.LabelFor(x => x.Name)
+    </div>
+    <div class="k-edit-field">
+        @Html.TextBoxFor(x => x.Name, new { @class = "k-textbox", id = "strCName" })
+        @Html.ValidationMessageFor(x => x.Name)
+    </div>
+
+    <div class="k-edit-label">
+        @Html.LabelFor(x => x.DeliveryAddress)
+    </div>
+    <div class="k-edit-field">
+        @Html.TextAreaFor(x => x.DeliveryAddress, new { @class = "k-textbox", id = "strCDeliveryAddress" })
+        @Html.ValidationMessageFor(x => x.DeliveryAddress)
+    </div>
+
+    <div class="k-edit-label">
+        @Html.LabelFor(x => x.Location)
+    </div>
+    <div class="k-edit-field">
+        @Html.TextAreaFor(x => x.Location, new { @class = "k-textbox", id = "strCLocation" })
+        @Html.ValidationMessageFor(x => x.Location)
+    </div>
+
+    <div class="k-edit-label">
+        @Html.LabelFor(x => x.PhoneNumber)
+    </div>
+    <div class="k-edit-field">
+        @Html.TextBoxFor(x => x.PhoneNumber, new { @class = "k-textbox", id = "strCPhoneNumber" })
+        @Html.ValidationMessageFor(x => x.PhoneNumber)
+    </div>
+
+   
+    <div class="k-edit-label">
+        @Html.LabelFor(x => x.EmailAddress)
+    </div>
+    <div class="k-edit-field">
+        @Html.TextBoxFor(x => x.EmailAddress, new { @class = "k-textbox", id = "strCEmailAddress" })
+        @Html.ValidationMessageFor(x => x.EmailAddress)
+    </div>
+
+    <div class="k-edit-label">
+        @Html.LabelFor(x => x.Gstnumber)
+    </div>
+    <div class="k-edit-field">
+        @Html.TextBoxFor(x => x.Gstnumber, new { @class = "k-textbox", id = "strCGstnumber" })
+        @Html.ValidationMessageFor(x => x.Gstnumber)
+    </div>
+
+    <div class="k-edit-label">
+        @Html.LabelFor(x => x.PanNumber)
+    </div>
+    <div class="k-edit-field">
+        @Html.TextBoxFor(x => x.PanNumber, new { @class = "k-textbox", id = "strCPanNumber" })
+        @Html.ValidationMessageFor(x => x.PanNumber)
+    </div>
+
+    @*<div class="k-edit-label">
+        @Html.LabelFor(x => x.IsActive)
+    </div>
+    <div class="k-edit-field">
+        @Html.CheckBoxFor(m => m.IsActive, new { id = "strCIsActive" })
+        @Html.ValidationMessageFor(x => x.IsActive)
+    </div>*@
+
+    <div class="k-edit-buttons k-state-default">
+        <a class="k-button k-button-icontext" href="javascript:void(0)" onclick="SaveConsigneeItem()">Save</a>
+        <a class="k-button k-button-icontext" href="javascript:void(0)" onclick="ClosePopupConsignee()">Cancel</a>
+    </div>
+
+</div>
+
+<script>
+    $(function () {
+        setupFormValidation('frmItems');
+        setFocusById('strName');
+    });
+
+    function SaveConsigneeItem() {
+        var validator = $("#frmItems").data("kendoValidator");
+        if (validator.validate()) {
+            var dataModel = {
+                'BuyerId': getInputValueById('strCBuyerId'),
+                'Name': getInputValueById('strCName'),
+                'DeliveryAddress': getInputValueById('strCDeliveryAddress'),
+                'Location': getInputValueById('strCLocation'),
+                'PhoneNumber': getInputValueById('strCPhoneNumber'),
+                'EmailAddress': getInputValueById('strCEmailAddress'),
+                'Gstnumber': getInputValueById('strCGstnumber'),
+                'PanNumber': getInputValueById('strCPanNumber'),
+                'IsActive': getInputValueById('strCIsActive')
+            };
+
+            var url = '@Url.Action("SaveConsignee", "Order")';
+            callwebservice(url, dataModel, saveConsigneeCompleted, false, datatypeEnum.text, typeEnum.post);
+        }
+    }
+
+    function saveConsigneeCompleted(returString) {
+        if (returString != null) {
+            if (returString === "0") {
+                showMessageOnly('Something went wrong please try again.', 'popup-error');
+            } else {
+                readkendoComboBox('ConsigneeId');
+                closeKendoWindow("wConsignee");
+                setInputValueById('ConsigneeId', returString);
+            }
+        }
+    }
+
+    function ClosePopupConsignee() {
+        closeKendoWindow("wConsignee");
+    }
+</script>

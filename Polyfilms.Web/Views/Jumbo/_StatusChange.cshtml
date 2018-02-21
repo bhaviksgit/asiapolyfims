@@ -1,0 +1,88 @@
+﻿
+@using Kendo.Mvc.UI;
+@model PolyFilms.Data.Models.JumboStatusModel
+<div class="k-edit-form-container" id="statusItem">
+
+    @Html.HiddenFor(m => m.JumboId, new { @id = "strJumboId" })
+    <div class="k-edit-label">
+        @Html.Label("Jumbo Number")
+    </div>
+    <div class="k-edit-field">
+        @Html.TextBoxFor(x => x.JumboNo, new { @class = "k-textbox", @readonly = "readonly", @id = "strJumboNo" })
+    </div>
+
+    <div class="k-edit-label">
+        @Html.Label("Status")
+    </div>
+    <div class="k-edit-field">
+
+        @(Html.Kendo().ComboBox()
+              .Name("StatusId")
+              .HtmlAttributes(new { style = "width:100%;" })
+              .BindTo(ViewBag.StatusList)
+              .DataTextField("Name")
+              .DataValueField("StatusId")
+
+              .Placeholder("--Select Status--")
+
+              )
+
+        @Html.ValidationMessageFor(x => x.StatusId)
+    </div>
+    
+    <div class="k-edit-label">
+        @Html.Label("Status Remarks")
+    </div>
+    <div class="k-edit-field">
+
+        @Html.TextAreaFor(model => model.JumboStatusRemarks, new { @class = "k-textbox", style = "width: 100%;" })
+
+        @Html.ValidationMessageFor(x => x.JumboStatusRemarks)
+    </div>
+
+    <div class="k-edit-buttons k-state-default">
+        <a class="k-button k-button-icontext" href="javascript:void(0)" onclick="ChangeStatus()">Save</a>
+        <a class="k-button k-button-icontext" href="javascript:void(0)" onclick="ClosePopupItems() ">Cancel</a>
+    </div>
+
+
+</div>
+
+<script>
+
+    $(function () {
+        setupFormValidation('statusItem');
+        setFocusById('strJumboNo');
+    });
+
+    function ClosePopupItems() {
+        closeKendoWindow("wStatuschnage");
+    }
+
+    function ChangeStatus() {
+        var validator = $("#statusItem").data("kendoValidator");
+        if (validator.validate()) {
+            var dataModel = {
+                'JumboId': getInputValueById('strJumboId'),
+                'JumboNo': getInputValueById('strJumboNo'),
+                'StatusId': getKendComboboxValue('StatusId'),
+                'JumboStatusRemarks': getInputValueById('JumboStatusRemarks')
+            };
+
+
+            var url = '@Url.Action("SaveChangeStatus", "Jumbo")';
+            callwebservice(url, { model: dataModel }, changeStatusCompleted, false, datatypeEnum.text, typeEnum.post);
+        }
+    }
+
+    function changeStatusCompleted(returString) {
+        if (returString != null) {
+            if (returString !== "") {
+                showMessageOnly(returString, 'popup-error');
+            } else {
+                closeKendoWindow("wStatuschnage");
+                readKendoGrid("jumboGrid");
+            }
+        }
+    }
+</script>

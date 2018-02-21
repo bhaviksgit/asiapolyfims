@@ -1,0 +1,382 @@
+﻿@using Kendo.Mvc.UI;
+@model PolyFilms.Data.Models.OrderModel
+@using System.Collections
+@using PolyFilms.Common
+
+@{
+    ViewBag.Title = "Work Order";
+}
+
+<style>
+    #frmItems {
+        width: 670px !important;
+    }
+    #frmItems {
+        width: 670px !important;
+    }
+</style>
+
+<div class="page-title">
+    <div>
+        <h1><i class="fa fa-clipboard"></i> Manage Work Order </h1>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-12">
+
+        @using (Html.BeginForm("SaveOrder", "Order", FormMethod.Post, new { @class = "form-horizontal", @id = "validation-form" }))
+        {
+            <div class="box">
+                <div class="box-content">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            @if (Model.OrderId > 0)
+                            {
+                                <div class="form-group">
+                                    <div class="col-sm-12 col-lg-12" style="font-weight:bold !important;font-size:18px;">
+                                        @Html.DisplayFor(m => m.OrderNo)
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        
+                        @if (Model.OrderStatusId == (short)Enums.OrderStatus.Dispatched || Model.OrderStatusId == (short)Enums.OrderStatus.Invoiced)
+                        {
+                            <div class="col-lg-6 text-right">
+                                <a href="@Url.Action("Index","Order")" class="btn btn-primary" tabindex="11">Back</a>
+                            </div>
+                        }
+                        else
+                        {
+                        <div class="col-lg-6 text-right">
+                            <input type="submit" class="btn btn-primary" value="Save" name="create" tabindex="8">
+                            <input type="submit" class="btn btn-primary" value="Save & Continue" name="create" tabindex="9">
+                            <a href="@Url.Action("Create","Order")" class="btn btn-primary" tabindex="10">New</a>
+                            <a href="@Url.Action("Index","Order")" class="btn btn-primary" tabindex="11">Back</a>
+                        </div>
+                        }
+
+                     </div>
+
+                </div>
+            </div>
+
+            <div class="box">
+                <div class="box-title">
+                    <h3>
+                        <i class="fa fa-bars"></i>Order Details
+                    </h3>
+                </div>
+                <div class="box-content">
+                    @Html.HiddenFor(m => m.OrderId)
+                    @Html.HiddenFor(m => m.OrderNo)
+                    @Html.HiddenFor(m => m.Day)
+                    @Html.HiddenFor(m => m.Month)
+                    @Html.HiddenFor(m => m.Year)
+                    @Html.HiddenFor(m => m.SequenceNo)
+                    @Html.HiddenFor(m => m.OrderStatusId)
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(x => x.OrderDate, new {@class = "col-sm-6 col-lg-3 control-label"})
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @if (Model.OrderId > 0)
+                                    {
+                                        @Html.Kendo().DatePickerFor(m => m.OrderDate).HtmlAttributes(new { @tabindex = 1, @readonly = "readonly" })
+                                    }
+                                    else
+                                    {
+                                        @Html.Kendo().DatePickerFor(m => m.OrderDate).HtmlAttributes(new {@tabindex = 1})
+                                        @Html.ValidationMessageFor(x => x.OrderDate)
+                                    }
+
+                                </div>
+                                
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.BuyerId, new {@class = "col-sm-6 col-lg-3 control-label"})
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @(Html.Kendo().ComboBoxFor(m => m.BuyerId)
+                                          .Value(Model.BuyerId == 0 ? string.Empty : Model.BuyerId.ToString())
+                                          .Placeholder("--Select Buyer --")
+                                          .HtmlAttributes(new {@tabindex = 3})
+                                          .DataTextField("Name")
+                                          .DataValueField("CustomerId")
+                                          .DataSource(source =>
+                                          {
+                                              source.Read(read =>
+                                              {
+                                                  read.Action("GetCustomerList", "Common");
+                                              });
+                                          })
+                                          .Events(e=>e.Change("OnchangetoClearIndexCommon")))
+                                    <input type="button" class="btn btn-primary" value="+" name="add" onclick="addCustomer()">
+
+                                    @Html.ValidationMessageFor(m => m.BuyerId)
+
+
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Specialinstruction, new {@class = "col-sm-6 col-lg-3 control-label"})
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.TextAreaFor(model => model.Specialinstruction, new {@class = "k-textbox", style = "width: 100%;", @tabindex = 5})
+                                    @Html.ValidationMessageFor(m => m.Specialinstruction)
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(x => x.DeliverySchedule, new {@class = "col-sm-6 col-lg-3 control-label"})
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().DatePickerFor(m => m.DeliverySchedule).HtmlAttributes(new {@tabindex = 2})
+                                    @Html.ValidationMessageFor(x => x.DeliverySchedule)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ConsigneeId, new {@class = "col-sm-6 col-lg-3 control-label"})
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @(Html.Kendo().ComboBoxFor(m => m.ConsigneeId)
+                                          .Value(Model.ConsigneeId == 0 ? string.Empty : Model.ConsigneeId.ToString())
+                                          .Placeholder("--Select Consignee --")
+                                          .DataTextField("Name")
+                                          .DataValueField("ConsigneeId")
+                                          .HtmlAttributes(new {@tabindex = 4})
+
+                                          .DataSource(source =>
+                                          {
+                                              source.Read(read =>
+                                              {
+                                                  read.Action("GetConsigneeListFromBuyer", "Common").Data("getBuyerId");
+                                              })
+                                                  .ServerFiltering(true);
+                                          })
+                                          .Events(e => e.Change("onChnageConsignee"))
+                                          .Enable(false)
+                                          .AutoBind(false)
+                                          .CascadeFrom("BuyerId"))
+
+                                    <input type="button" class="btn btn-primary" value="+" name="add" onclick="addConsignee()">
+
+                                    @Html.ValidationMessageFor(m => m.ConsigneeId)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.PhoneNumber, new {@class = "col-sm-6 col-lg-3 control-label"})
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().TextBoxFor(m => m.PhoneNumber).HtmlAttributes(new {@class = "k-textbox", @readonly = "readonly", tabindex = 6})
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.DeliveryAddress, new {@class = "col-sm-6 col-lg-3 control-label"})
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.TextAreaFor(model => model.DeliveryAddress, new {@class = "k-textbox", style = "width: 100%;", @readonly = "readonly", tabindex = 7})
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+
+            if (Model.OrderId > 0)
+            {
+                <div class="box">
+                    <div class="box-title">
+                        <h3>
+                            <i class="fa fa-bars"></i>Product Details
+                        </h3>
+                    </div>
+                    <div class="box-content">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="panel">
+                                    <div class="panel-body">
+                                        @(Html.Kendo().Grid<PolyFilms.Data.Models.OrderDetailModel>()
+                                              .Name("orderdetailGrid")
+                                              .Columns(columns =>
+                                              {
+                                                  if (!(Model.OrderStatusId == (short) Enums.OrderStatus.Dispatched || Model.OrderStatusId == (short) Enums.OrderStatus.Invoiced))
+                                                  {
+                                                      columns.Command(command =>
+                                                      {
+                                                          command.Edit().Text(" ");
+                                                          command.Destroy().Text(" ");
+                                                      }).Title("Action").HtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanEdit)
+                                                          .HeaderHtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanEdit);
+                                                  }
+                                                  columns.ForeignKey(d => d.ProductId, (IEnumerable) ViewBag.ProductList, "ProductId", "Name");
+                                                  columns.Bound(d => d.Thickness);
+                                                  columns.Bound(d => d.Width);
+                                                  columns.Bound(d => d.Od);
+                                                  columns.Bound(d => d.Quantity);
+                                              })
+
+                                              .ToolBar(toolbar =>
+                                              {
+                                                  if (!(Model.OrderStatusId == (short) Enums.OrderStatus.Dispatched || Model.OrderStatusId == (short) Enums.OrderStatus.Invoiced))
+                                                  {
+                                                      toolbar.Create().Text("Add");
+                                                  }
+                                              })
+                                              .Editable(editable =>
+                                              {
+                                                  editable.Mode(GridEditMode.PopUp);
+                                                  editable.DisplayDeleteConfirmation("Are you sure you want to delete this Product of Order?");
+                                                  editable.Window(x => x.Title("Manage Order Product"));
+                                              })
+                                              .Pageable(x =>
+                                              {
+                                                  x.Refresh(true);
+                                              })
+                                              .Sortable(sortable => sortable.AllowUnsort(false))
+                                              .Filterable(filter => filter.Enabled(false))
+                                              .NoRecords()
+                                              .Events(grid => grid.Edit("editDetailGrid"))
+                                              .DataSource(dataSource => dataSource
+                                                  .Ajax()
+                                                  .ServerOperation(true)
+                                                  .Model(model => model.Id(d => d.OrderDetailId))
+                                                  .Events(events => events.Error("onError(\"orderdetailGrid\")"))
+                                                  .Create(update => update.Action("KendoSave", "OrderDetail"))
+                                                  .Read(read => read.Action("KendoRead", "OrderDetail").Data("additionalInfo"))
+                                                  .Update(update => update.Action("KendoSave", "OrderDetail"))
+                                                  .Destroy(update => update.Action("KendoDestroy", "OrderDetail"))
+                                              ))
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+</div>
+
+@(Html.Kendo().Window()
+      .Name("wCustomer")
+      .Title("Add Buyer")
+      .Visible(false)
+      .Draggable(true)
+      .Modal(true)
+      .Width(700)
+      .Height(530))
+
+
+@(Html.Kendo().Window()
+      .Name("wConsignee")
+      .Title("Add Consignee")
+      .Visible(false)
+      .Draggable(true)
+      .Modal(true)
+      .Width(700)
+      .Height(450))
+
+
+<script>
+    $(function () {
+        setupFormValidation('validation-form');
+        setFocusById('OrderDate');
+    });
+
+
+    function onChnage(e) {
+        if (this.value() && this.selectedIndex === -1) {                    
+            this.value("");
+            return;
+        }
+        var grid = $("#orderdetailGrid").data("kendoGrid").editable.options.model;
+        var comboBox = e.sender.dataItem().Thickness;
+        grid.set('Thickness', comboBox);
+
+    }
+
+    function onChnageConsignee(e) {
+        if (this.value && this.selectedIndex === -1) {
+            this.value("");
+            return;
+        }
+
+        var dataItem = e.sender.dataItem();
+        if (dataItem != null) {
+            setInputValueById('PhoneNumber', dataItem.PhoneNumber);
+            setInputValueById('DeliveryAddress', dataItem.DeliveryAddress);
+        }
+        else {
+            setInputValueById('PhoneNumber', '');
+            setInputValueById('DeliveryAddress', '');
+        }
+    }
+
+    function editDetailGrid(e) {
+        e.container.data('kendoWindow').bind('activate', function () {
+            setKendoComboboxFocusById('ProductId');
+        });
+
+        if (e.model.isNew()) {
+            e.model.set("OrderId", getInputValueById('OrderId'));
+            e.model.set("ProductId", "");
+        }
+
+    }
+
+    function additionalInfo() {
+        return {
+            orderId: getInputValueById('OrderId') 
+        }
+    }
+
+    function addCustomer() {
+        var urllink = '@Url.Action("AddCustomer", "Order")';
+        var window = $("#wCustomer").data("kendoWindow");
+        window.refresh({
+            url: urllink
+        });
+        window.center();
+        window.open();
+        
+    }
+
+
+    function addConsignee() {
+        var buyerId = getKendComboboxValue('BuyerId');
+
+        if (buyerId !== null && buyerId !== "") {
+            var urllink = '@Url.Action("AddConsignee", "Order")';
+            var window = $("#wConsignee").data("kendoWindow");
+            window.refresh({
+                url: urllink,
+                data: { "buyerId": buyerId}
+            });
+            window.center();
+            window.open();
+        }
+        else {
+            showMessageOnly('Please select buyer first before creating new consignee', 'popup-error');
+        }
+    }
+
+    function getBuyerId() {
+        var dataitem = $('#BuyerId').data("kendoComboBox").dataItem($('#BuyerId').data("kendoComboBox").select());
+        return {
+            buyerId: dataitem.CustomerId
+        }
+    }
+</script>
+
+

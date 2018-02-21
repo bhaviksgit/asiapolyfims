@@ -1,0 +1,234 @@
+﻿@using PolyFilms.Data.Models
+@using System.Collections
+@using PolyFilms.Common
+
+@{
+    ViewBag.Title = "Audit";
+}
+
+<div class="page-title">
+    <div>
+        <h1><i class="fa fa-cog"></i> Audit </h1>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="fa fa-search"></i>Search</h3>
+                <div class="box-tool">
+                    <a data-action="collapse" href="#"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+            <div class="box-content">
+                <div class="btn-toolbar">
+                    <label class="col-lg-2 control-label">From date</label>
+
+                    <label class="col-lg-2 control-label">To date</label>
+
+                    <label class="col-lg-2 control-label">Table</label>
+
+                    <label class="col-lg-2 control-label">Action</label>
+
+                    <label class="col-lg-2 control-label">User</label>
+
+                    <label class="col-lg-2 control-label"></label>
+
+                </div>
+
+                <div class="btn-toolbar">
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().DatePicker()
+                              .Name("fromDate")
+                              .Events(e => e.Change("startChange"))
+                              .HtmlAttributes(new { @style = "width:100% !important", @tabindex = 1 }))
+                    </div>
+
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().DatePicker()
+                              .Name("toDate")
+                              .Events(e => e.Change("endChange"))
+                              .HtmlAttributes(new { @style = "width:100% !important", @tabindex = 2 }))
+                    </div>
+
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().ComboBox()
+                            .Name("ScreenId")
+                            .HtmlAttributes(new { style = "width:100%;" })
+                            .BindTo(ViewBag.ScreenList)
+                            .DataTextField("ScreenName")
+                            .DataValueField("TableName")
+                            .Placeholder("--Select Table--")
+                        )
+                    </div>
+
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().ComboBox()
+                              .Name("ActionId")
+                              .HtmlAttributes(new { style = "width:100%;" })
+                              .BindTo(ViewBag.EntityActionList)
+                              .DataTextField("Name")
+                              .DataValueField("Name")
+                              .Placeholder("--Select Action--")
+                        )
+                    </div>
+
+                    <div class="col-lg-2 controls">
+                        @(Html.Kendo().ComboBox()
+                            .Name("UserId")
+                            .HtmlAttributes(new { style = "width:100%;" })
+                            .BindTo(ViewBag.UserList)
+                            .DataTextField("Name")
+                            .DataValueField("UserId")
+                            .Placeholder("--Select User--")
+                        )
+                    </div>
+
+                    <div class="col-lg-2 controls">
+                        <input type="button" value="Search" class="btn btn-primary" onclick="search()" />
+                        <input type="button" value="Reset" id="Reset" class="btn btn-primary" onclick="reset()" style="margin-left: 5px !important" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-xs-12">
+
+        @(Html.Kendo().Grid<AuditModel>()
+                    .Name("grid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(d => d.DateTime).Format("{0:" + CommonHelper.DateFormate + "}").Title("Date & Time");
+                        columns.ForeignKey(p => p.TableName, (IEnumerable)ViewBag.ScreenList, "TableName", "ScreenName").Title("Screen");
+                        columns.ForeignKey(d => d.UserId, (IEnumerable)ViewBag.UserList, "UserId", "Name").Title("User");
+                        columns.Bound(d => d.Action);
+                        columns.Command(command =>
+                        {
+                            command.Custom("Details").Text("View").Click("viewDetails");
+
+                        }).Title("Details").HtmlAttributes(WebHelper.StatusColumnStyle).HeaderHtmlAttributes(WebHelper.StatusColumnStyle).HtmlAttributes(new { @title = "View Detail" }); ;
+                    })
+                    .Pageable(x =>
+                    {
+                        x.Refresh(true);
+                        x.PageSizes(WebHelper.PageSizes);
+                    })
+                                      .Sortable(sortable => sortable.AllowUnsort(false))
+                                      .Filterable(filter => filter.Enabled(false))
+                                      .NoRecords()
+                                      .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .ServerOperation(true)
+                                      .PageSize(WebHelper.PageSize)
+                                      .Events(events => events.Error("onError(\"grid\")"))
+                                      .Read(read => read.Action("KendoRead", "Audit").Data("additionalInfo"))
+
+                ))
+    </div>
+</div>
+
+@(Html.Kendo().Window()
+      .Name("myWindow")
+      .Title("Audit History")
+      .Visible(false)
+      .Draggable(true)
+      .Modal(true)
+      .Width(630)
+      .Height(400))
+
+<script type="text/javascript">
+    function additionalInfo() {
+        return {
+            fromDate: getInputValueById('fromDate'),
+            toDate: getInputValueById('toDate'),
+            userId: getInputValueById('UserId'),
+            screenId: getInputValueById('ScreenId'),
+            actionId: getInputValueById('ActionId')
+        }
+
+    }
+
+    function search() {
+        readKendoGrid('grid');
+    }
+
+    function reset() {
+        setKendoDatePickerValue('fromDate', '');
+        setKendoDatePickerValue('toDate', '');
+        setKendComboboxValue('UserId', '');
+        setKendComboboxValue('ScreenId', '');
+        setKendComboboxValue('ActionId', '');
+
+
+        var endPicker = $("#toDate").data("kendoDatePicker");
+        endPicker.min(new Date(1900, 0, 1)); // Setting defaults
+        endPicker.max(new Date(2099, 11, 31));
+
+        var startPicker = $("#fromDate").data("kendoDatePicker");
+        startPicker.min(new Date(1900, 0, 1)); // Setting defaults
+        startPicker.max(new Date(2099, 11, 31));
+
+        readKendoGrid('grid');
+    }
+
+
+    function viewDetails(e) {
+        e.preventDefault();
+        var tr = $(e.target).closest("tr");
+        var data = this.dataItem(tr);
+
+        var urllink = '@Url.Action("AuditDetails", "Audit")';
+
+        var window = $("#myWindow").data("kendoWindow");
+        window.content("");
+        window.refresh({
+            url: urllink,
+            data: { "id": data.Id }
+        });
+
+        window.center();
+        window.open();
+
+    }
+
+
+    function startChange() {
+        var endPicker = $("#toDate").data("kendoDatePicker"),
+            startDate = this.value();
+
+        if (startDate) {
+            startDate = new Date(startDate);
+            startDate.setDate(startDate.getDate());
+            endPicker.min(startDate);
+        } else if (!endPicker.value()) {   // You said both
+            endPicker.min(new Date(1900, 0, 1)); // Setting defaults
+            endPicker.max(new Date(2099, 11, 31));
+            this.min(new Date(1900, 0, 1));
+            this.max(new Date(2099, 11, 31));
+        }
+    }
+
+    function endChange() {
+        var startPicker = $("#fromDate").data("kendoDatePicker"),
+            endDate = this.value();
+
+        if (endDate) {
+            endDate = new Date(endDate);
+            endDate.setDate(endDate.getDate());
+            startPicker.max(endDate);
+        }
+        else if (!startPicker.value()) {
+            startPicker.min(new Date(1900, 0, 1)); // Setting defaults
+            startPicker.max(new Date(2099, 11, 31));
+            this.min(new Date(1900, 0, 1));
+            this.max(new Date(2099, 11, 31));
+        }
+    }
+
+</script>

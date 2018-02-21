@@ -1,0 +1,348 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AddressLength" xml:space="preserve">
+    <value>Primary Address must be less than or equal to 100 characters.</value>
+  </data>
+  <data name="AddressRequired" xml:space="preserve">
+    <value>Primary Address id required.</value>
+  </data>
+  <data name="BuyerIdRequired" xml:space="preserve">
+    <value>Buyer is required</value>
+  </data>
+  <data name="CoreNoLength" xml:space="preserve">
+    <value>Core Number must be less than or equat to 20 characters.</value>
+  </data>
+  <data name="CoreNoRequired" xml:space="preserve">
+    <value>Core Number is required</value>
+  </data>
+  <data name="CoreRequired" xml:space="preserve">
+    <value>Core is required</value>
+  </data>
+  <data name="DeliveryScheduleRequired" xml:space="preserve">
+    <value>Delivery Schedule is required</value>
+  </data>
+  <data name="EmailLength" xml:space="preserve">
+    <value>Email Address must be less than or equal to 100 characters.</value>
+  </data>
+  <data name="EmailRequired" xml:space="preserve">
+    <value>Email Address is required</value>
+  </data>
+  <data name="FilmTypeLength" xml:space="preserve">
+    <value>Film Type must be less than or equal to 50 characters</value>
+  </data>
+  <data name="FilmTypeRequired" xml:space="preserve">
+    <value>Film Type is required</value>
+  </data>
+  <data name="GrossweightRequired" xml:space="preserve">
+    <value>Gross Weight is required</value>
+  </data>
+  <data name="GSTNOLength" xml:space="preserve">
+    <value>GST Number must be less than or equal to 50 characters</value>
+  </data>
+  <data name="GSTNORequired" xml:space="preserve">
+    <value>GST Number is required</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>Please provide valid email address.</value>
+  </data>
+  <data name="JumboDateRequired" xml:space="preserve">
+    <value>Jumbo date is required</value>
+  </data>
+  <data name="LengthRequired" xml:space="preserve">
+    <value>Length is required</value>
+  </data>
+  <data name="LineNoLength" xml:space="preserve">
+    <value>Line Number must be only one characters</value>
+  </data>
+  <data name="LineNoRequired" xml:space="preserve">
+    <value>Line Number is required</value>
+  </data>
+  <data name="LocationLength" xml:space="preserve">
+    <value>Location must be less than or equal to 50 characters</value>
+  </data>
+  <data name="LocationRequired" xml:space="preserve">
+    <value>Location is required</value>
+  </data>
+  <data name="MainApplicationLength" xml:space="preserve">
+    <value>Main Applications must be less than or equal to 50 characters</value>
+  </data>
+  <data name="MainApplicationRequired" xml:space="preserve">
+    <value>Main Applications are required</value>
+  </data>
+  <data name="MainFeaturesLength" xml:space="preserve">
+    <value>Main Features must be less than or equal to 50 characters</value>
+  </data>
+  <data name="MainFeaturesRequired" xml:space="preserve">
+    <value>Main Features are required</value>
+  </data>
+  <data name="NameLength" xml:space="preserve">
+    <value>Name must be less than or equal to 50 characters</value>
+  </data>
+  <data name="NameRequired" xml:space="preserve">
+    <value>Name is required</value>
+  </data>
+  <data name="OdRequired" xml:space="preserve">
+    <value>OD is required</value>
+  </data>
+  <data name="OrderDateRequired" xml:space="preserve">
+    <value>Order Date is required</value>
+  </data>
+  <data name="OrderRequired" xml:space="preserve">
+    <value>Order is required</value>
+  </data>
+  <data name="PasswordLength" xml:space="preserve">
+    <value>Password must be less than or equal to 15 characters</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>Password is required</value>
+  </data>
+  <data name="PhoneNumberLength" xml:space="preserve">
+    <value>Contact Number must be less than or equal to 20 characters.</value>
+  </data>
+  <data name="PreTreatmentLength" xml:space="preserve">
+    <value>Pre-Treatment must be less than or equal to 50 characters</value>
+  </data>
+  <data name="PreTreatmentRequired" xml:space="preserve">
+    <value>Pre-Treatment is required</value>
+  </data>
+  <data name="ProductRequired" xml:space="preserve">
+    <value>Product is required</value>
+  </data>
+  <data name="QualityRequired" xml:space="preserve">
+    <value>Quality is required</value>
+  </data>
+  <data name="QuantityRequired" xml:space="preserve">
+    <value>Quantity is required</value>
+  </data>
+  <data name="RemarksLength" xml:space="preserve">
+    <value>Special Instructions must be lessa than or equal to 500 characters</value>
+  </data>
+  <data name="RoleNameLength" xml:space="preserve">
+    <value>Name must be less than or equal to 50 characters</value>
+  </data>
+  <data name="RoleRequired" xml:space="preserve">
+    <value>Role is required</value>
+  </data>
+  <data name="ShiftInchargeRequired" xml:space="preserve">
+    <value>Shift Incharge is required.</value>
+  </data>
+  <data name="ShiftRequired" xml:space="preserve">
+    <value>Shift is required</value>
+  </data>
+  <data name="SlittingDateRequired" xml:space="preserve">
+    <value>Slitting date is required</value>
+  </data>
+  <data name="ThicknessRequired" xml:space="preserve">
+    <value>Micron is required</value>
+  </data>
+  <data name="TimeInRequired" xml:space="preserve">
+    <value>TimeIn is required</value>
+  </data>
+  <data name="TimeOutRequired" xml:space="preserve">
+    <value>TimeOut is required</value>
+  </data>
+  <data name="TreatmentRequired" xml:space="preserve">
+    <value>Treatment is required</value>
+  </data>
+  <data name="UsernameLength" xml:space="preserve">
+    <value>User Name must be less than or equal to 50 characters</value>
+  </data>
+  <data name="UsernameRequired" xml:space="preserve">
+    <value>User Name is required</value>
+  </data>
+  <data name="WeightRequired" xml:space="preserve">
+    <value>Weight is required</value>
+  </data>
+  <data name="WidthRequired" xml:space="preserve">
+    <value>Width is required</value>
+  </data>
+  <data name="CustomerRequired" xml:space="preserve">
+    <value>Customer is required</value>
+  </data>
+  <data name="DispatchDateRequired" xml:space="preserve">
+    <value>Dispatch Date is required</value>
+  </data>
+  <data name="LrnoRequired" xml:space="preserve">
+    <value>LR Number is required</value>
+  </data>
+  <data name="ModeOfTransportRequired" xml:space="preserve">
+    <value>Mode Of Transport is required</value>
+  </data>
+  <data name="NameOfTransporterRequired" xml:space="preserve">
+    <value>Name Of Transporter is required</value>
+  </data>
+  <data name="VehicleNoRequired" xml:space="preserve">
+    <value>Vehicle No is required</value>
+  </data>
+  <data name="CgstRequired" xml:space="preserve">
+    <value>CGST is required</value>
+  </data>
+  <data name="IgstRequired" xml:space="preserve">
+    <value>IGST is required</value>
+  </data>
+  <data name="InvoiceDateRequired" xml:space="preserve">
+    <value>Invoice Date is required</value>
+  </data>
+  <data name="SgstRequired" xml:space="preserve">
+    <value>SGST is required</value>
+  </data>
+  <data name="ConsigneeIdRequired" xml:space="preserve">
+    <value>Consignee is required</value>
+  </data>
+  <data name="PhoneNumberRequired" xml:space="preserve">
+    <value>Contact Number is required</value>
+  </data>
+  <data name="PanNumberLength" xml:space="preserve">
+    <value>PAN Number must be less than or equal to 50 characters</value>
+  </data>
+  <data name="PanNumberRequired" xml:space="preserve">
+    <value>PAN Number is required</value>
+  </data>
+  <data name="ConfirmPasswordRequired" xml:space="preserve">
+    <value>Confirm Password is required</value>
+  </data>
+  <data name="StatusRequired" xml:space="preserve">
+    <value>Status is required</value>
+  </data>
+  <data name="DeliveryAddressRequired" xml:space="preserve">
+    <value>Shipping Address is Required</value>
+  </data>
+  <data name="ConfirmPasswordMismatch" xml:space="preserve">
+    <value>Password and Confirm Password must be same.</value>
+  </data>
+  <data name="LocationSlittingLength" xml:space="preserve">
+    <value>Location must be only one character</value>
+  </data>
+  <data name="OperatorRequired" xml:space="preserve">
+    <value>Operator is required</value>
+  </data>
+  <data name="JointRequired" xml:space="preserve">
+    <value>Jumbo Joint is required</value>
+  </data>
+  <data name="SetNoRequired" xml:space="preserve">
+    <value>Set No is required</value>
+  </data>
+  <data name="WinderLength" xml:space="preserve">
+    <value>Winder must be only one character</value>
+  </data>
+  <data name="WinderRequired" xml:space="preserve">
+    <value>Winder is required</value>
+  </data>
+</root>

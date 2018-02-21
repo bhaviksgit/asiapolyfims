@@ -1,0 +1,11 @@
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Data\bin\Debug\netcoreapp2.0\PolyFilms.Data.deps.json
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Data\bin\Debug\netcoreapp2.0\PolyFilms.Data.dll
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Data\bin\Debug\netcoreapp2.0\PolyFilms.Data.pdb
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Data\bin\Debug\netcoreapp2.0\PolyFilms.Common.dll
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Data\bin\Debug\netcoreapp2.0\PolyFilms.Common.pdb
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Data\obj\Debug\netcoreapp2.0\PolyFilms.Data.csprojResolveAssemblyReference.cache
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Data\obj\Debug\netcoreapp2.0\PolyFilms.Data.csproj.CoreCompileInputs.cache
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Data\obj\Debug\netcoreapp2.0\PolyFilms.Data.AssemblyInfoInputs.cache
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Data\obj\Debug\netcoreapp2.0\PolyFilms.Data.AssemblyInfo.cs
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Data\obj\Debug\netcoreapp2.0\PolyFilms.Data.dll
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Data\obj\Debug\netcoreapp2.0\PolyFilms.Data.pdb

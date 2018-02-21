@@ -1,0 +1,43 @@
+﻿@model IEnumerable<PolyFilms.Data.Models.AuditChange>
+
+<div class='k-grid k-widget k-display-block'>
+    <table>
+
+        @foreach (var auditChange in Model)
+        {
+            <thead class="k-grid-header" role="rowgroup">
+                <tr class='active'><th colspan='2' class="k-header">Event date:  @auditChange.DateTimeStamp </th><th class="k-header">Action type: @auditChange.AuditActionTypeName</th></tr>
+                <tr class='text-warning'><th class="k-header">Field name</th><th class="k-header">Before change</th><th class="k-header">After change</th></tr>
+            </thead>
+
+            int i = 1;
+
+            foreach (var changes in auditChange.Changes)
+            {
+                <tbody role="rowgroup">
+
+                    @if (i % 2 == 0)
+                    {
+                        <tr class="k-alt">
+                            <td>@changes.FieldName</td>
+                            <td>@changes.ValueBefore</td>
+                            <td>@changes.ValueAfter</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td>@changes.FieldName</td>
+                            <td>@changes.ValueBefore</td>
+                            <td>@changes.ValueAfter</td>
+                        </tr>
+                    }
+
+                </tbody>
+
+                i++;
+            }
+        }
+
+    </table>
+</div>

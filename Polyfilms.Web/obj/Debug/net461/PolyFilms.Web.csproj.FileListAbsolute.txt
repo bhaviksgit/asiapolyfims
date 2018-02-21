@@ -1,0 +1,5 @@
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\obj\Debug\net461\PolyFilms.Web.csprojResolveAssemblyReference.cache
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\obj\Debug\net461\PolyFilms.Web.csproj.PolyFilms.Web.exe.config
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\obj\Debug\net461\PolyFilms.Web.csproj.CoreCompileInputs.cache
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\obj\Debug\net461\PolyFilms.Web.AssemblyInfoInputs.cache
+D:\Projects\AsiaPolyfilms\trunk\Polyfilms.Web\obj\Debug\net461\PolyFilms.Web.AssemblyInfo.cs

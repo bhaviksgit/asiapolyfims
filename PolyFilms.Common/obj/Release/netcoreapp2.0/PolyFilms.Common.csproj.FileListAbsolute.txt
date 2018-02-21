@@ -1,0 +1,12 @@
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Common\bin\Release\netcoreapp2.0\PolyFilms.Common.deps.json
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Common\bin\Release\netcoreapp2.0\PolyFilms.Common.dll
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Common\bin\Release\netcoreapp2.0\PolyFilms.Common.pdb
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Common\obj\Release\netcoreapp2.0\PolyFilms.Common.csprojResolveAssemblyReference.cache
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Common\obj\Release\netcoreapp2.0\PolyFilms.Common.resLabels.resources
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Common\obj\Release\netcoreapp2.0\PolyFilms.Common.resValidationMsg.resources
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Common\obj\Release\netcoreapp2.0\PolyFilms.Common.csproj.GenerateResource.Cache
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Common\obj\Release\netcoreapp2.0\PolyFilms.Common.csproj.CoreCompileInputs.cache
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Common\obj\Release\netcoreapp2.0\PolyFilms.Common.AssemblyInfoInputs.cache
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Common\obj\Release\netcoreapp2.0\PolyFilms.Common.AssemblyInfo.cs
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Common\obj\Release\netcoreapp2.0\PolyFilms.Common.dll
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Common\obj\Release\netcoreapp2.0\PolyFilms.Common.pdb

@@ -1,0 +1,6 @@
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Common\obj\Debug\net461\PolyFilms.Common.resLabels.resources
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Common\obj\Debug\net461\PolyFilms.Common.resValidationMsg.resources
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Common\obj\Debug\net461\PolyFilms.Common.csproj.GenerateResource.Cache
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Common\obj\Debug\net461\PolyFilms.Common.csproj.CoreCompileInputs.cache
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Common\obj\Debug\net461\PolyFilms.Common.AssemblyInfoInputs.cache
+D:\Projects\AsiaPolyfilms\trunk\PolyFilms.Common\obj\Debug\net461\PolyFilms.Common.AssemblyInfo.cs

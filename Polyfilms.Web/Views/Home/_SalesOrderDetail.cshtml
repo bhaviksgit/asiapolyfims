@@ -1,0 +1,49 @@
+﻿@*@using PolyFilms.Data.CustomModel
+@using PolyFilms.Common
+
+<div class="row">
+    <div class="col-xs-12">
+
+        @(Html.Kendo().Grid<SalesOrderDetailModel>()
+                    .Name("salesorderGrid")
+                    .Columns(columns =>
+                    {
+
+                        columns.Bound(d => d.OrderNo);
+                        columns.Bound(d => d.OrderDate).Format("{0:" + CommonHelper.DateFormate + "}");
+                        columns.Bound(d => d.Buyer);
+                        columns.Bound(d => d.Location);
+                        columns.Bound(d => d.Product);
+                        columns.Bound(d => d.MainApplication);
+                        columns.Bound(d => d.OD);
+                        columns.Bound(d => d.Thickness);
+                        columns.Bound(d => d.Width);
+                        columns.Bound(d => d.Quantity);
+                        columns.Bound(d => d.DispatchDate).Format("{0:" + CommonHelper.DateFormate + "}");
+                        columns.Bound(d => d.DispatchNo);
+                        columns.Bound(d => d.TotalSlittingDone);
+                        columns.Bound(d => d.RemainingSlitting);
+                        columns.Bound(d => d.Status);
+
+                    })
+
+                    .Pageable(x =>
+                    {
+                        x.Refresh(true);
+                        x.PageSizes(WebHelper.PageSizes);
+                    })
+                                      .Sortable(sortable => sortable.AllowUnsort(false))
+                                      .Filterable(filter => filter.Enabled(false))
+                                      .NoRecords()
+
+
+                                      .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .ServerOperation(true)
+                                      .PageSize(WebHelper.PageSize)
+                                      .Model(model => model.Id(d => d.OrderNo))
+                                      .Events(events => events.Error("onError(\"salesorderGrid\")"))
+                                      .Read(read => read.Action("KendoReadSalesOrderDetail", "Home"))
+                ))
+    </div>
+</div>*@

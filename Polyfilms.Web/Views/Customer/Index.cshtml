@@ -1,0 +1,188 @@
+﻿@using PolyFilms.Data.Models
+@using PolyFilms.Common
+
+@{
+    ViewBag.Title = "Customers";
+}
+
+<div class="page-title">
+    <div>
+        <h1><i class="fa fa-cog"></i> Customers </h1>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="panel">
+            <div class="panel-body">
+               
+
+                @(Html.Kendo().Grid<CustomerModel>()
+                    .Name("customerGrid")
+                    .Columns(columns =>
+                    {
+                        if (AuthorizationHelper.CanEditDelete(ViewContext.RouteData.Values["Controller"].ToString()))
+                        {
+                            columns.Command(command =>
+                            {
+                                if (AuthorizationHelper.CanEdit(ViewContext.RouteData.Values["Controller"].ToString()))
+                                {
+                                    command.Edit().Text(" ").HtmlAttributes(new {@title ="Edit"});
+                                }
+                                if (AuthorizationHelper.CanDelete(ViewContext.RouteData.Values["Controller"].ToString()))
+                                {
+                                    command.Destroy().Text(" ").HtmlAttributes(new { @title = "Delete" });
+                                }
+                            }).Title("Action").HtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanEdit)
+                               .HeaderHtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanEdit);
+                        }
+                        columns.Bound(d => d.Name).Title("Buyer Name");
+                        columns.Bound(d => d.Address).Title(resLabels.Address);
+                        columns.Bound(d => d.DeliveryAddress).Title(resLabels.DeliveryAddress);
+                        columns.Bound(d => d.Location).Title(resLabels.Location);
+                        columns.Bound(d => d.PhoneNumber);
+                        columns.Bound(d => d.EmailAddress);
+                        columns.Bound(d => d.Gstnumber).Title(resLabels.GSTNO);
+                        columns.Bound(d => d.PanNumber);
+                        columns.Bound(d => d.CreatedDate);
+                        if (AuthorizationHelper.CanChangeStatus(ViewContext.RouteData.Values["Controller"].ToString()))
+                        {
+                            columns.Bound(d => d.IsActive).Filterable(false)
+                                           .ClientTemplate(Html.SetStatusClientTemplate("IsActive", "Customer", "ChangeStatus",
+                                           "id=#= CustomerId #", "#= CustomerId #", "customerGrid", resLabels.Customer)).HtmlAttributes(WebHelper.StatusColumnStyle)
+                                           .HeaderHtmlAttributes(WebHelper.StatusColumnStyle);
+                        }
+                    })
+                    .ToolBar(toolbar =>
+                    {
+                        if (AuthorizationHelper.CanAdd(ViewContext.RouteData.Values["Controller"].ToString()))
+                        {
+                            toolbar.Create().Text("Add").HtmlAttributes(new { @title = "Add" });
+                            toolbar.Excel();
+                        }
+                    })
+                    .Editable(editable =>
+                    {
+                        editable.Mode(GridEditMode.PopUp);
+                        editable.DisplayDeleteConfirmation("Are you sure you want to delete this buyer?");
+                        editable.Window(x => x.Title("Manage Buyer"));
+                    })
+                      .Excel(excel => excel
+                          .FileName("Customer List")
+                          .Filterable(true)
+                          .ProxyURL(Url.Action("Excel_Export_Save", "Home"))
+                      )
+                    .Pageable(x =>
+                    {
+                        x.Refresh(true);
+                        x.PageSizes(WebHelper.PageSizes);
+                    })
+                                      .Sortable(sortable => sortable.AllowUnsort(false))
+                                      .Filterable(f=>f.Enabled(false))
+                                      .NoRecords()
+                                      .ClientDetailTemplateId("template")
+                                      .Events(grid => grid.Edit("edit"))
+                                      .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .ServerOperation(true)
+                                      .PageSize(WebHelper.PageSize)
+                                      .Model(model => model.Id(d => d.CustomerId))
+                                      .Events(events => events.Error("onError(\"customerGrid\")"))
+                                      .Create(update => update.Action("KendoSave", "Customer"))
+                                      .Read(read => read.Action("KendoRead", "Customer"))
+                                      .Update(update => update.Action("KendoSave", "Customer"))
+                                      .Destroy(update => update.Action("KendoDestroy", "Customer"))
+                ))
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().Grid<ConsigneeModel>()
+                      .Name("grid_#=CustomerId#")
+              .Columns(columns =>
+              {
+                  if (AuthorizationHelper.CanEditDelete(ViewContext.RouteData.Values["Controller"].ToString()))
+                  {
+                      columns.Command(command =>
+                      {
+                          if (AuthorizationHelper.CanEdit(ViewContext.RouteData.Values["Controller"].ToString()))
+                          {
+                              command.Edit().Text(" ").HtmlAttributes(new { @title = "Edit" });
+                          }
+                          if (AuthorizationHelper.CanDelete(ViewContext.RouteData.Values["Controller"].ToString()))
+                          {
+                              command.Destroy().Text(" ").HtmlAttributes(new { @title = "Delete" });
+                          }
+
+                      }).Title("Action").HtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanEdit)
+                          .HeaderHtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanEdit);
+                  }
+                  columns.Bound(d => d.Name);
+                  columns.Bound(d => d.DeliveryAddress).Visible(true);
+                  columns.Bound(d => d.Location);
+                  columns.Bound(d => d.PhoneNumber).Visible(true);
+                  columns.Bound(d => d.EmailAddress);
+                  columns.Bound(d => d.Gstnumber);
+                  columns.Bound(d => d.PanNumber);
+
+              })
+               .ToolBar(toolbar =>
+               {
+                   if (AuthorizationHelper.CanAdd(ViewContext.RouteData.Values["Controller"].ToString()))
+                   {
+                       toolbar.Create().Text("Add").HtmlAttributes(new { @title = "Add" });
+                   }
+
+               })
+              .Editable(editable =>
+              {
+                  editable.Mode(GridEditMode.PopUp);
+                  editable.DisplayDeleteConfirmation("Are you sure you want to delete this consignee?");
+                  editable.Window(x => x.Title("Manage Consignee"));
+              })
+
+
+
+              .NoRecords()
+              .Events(grid => grid.Edit("editConsignee"))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .ServerOperation(true)
+                          .Model(model => model.Id(d => d.ConsigneeId))
+                          .Events(events => events.Error("onError(\"grid_#=CustomerId#\")"))
+                         .Create(update => update.Action("KendoSave", "Consignee"))
+                          .Read(read => read.Action("KendoRead", "Consignee", new { buyerId = "#=CustomerId#" }))
+                         .Update(update => update.Action("KendoSave", "Consignee"))
+                         .Destroy(update => update.Action("KendoDestroy", "Consignee"))
+                      ).ToClientTemplate())
+</script>
+
+<script type="text/javascript">
+    function edit(e) {
+        if (e.model.isNew()) {
+            e.model.set("IsActive", true);
+        }
+        e.container.data('kendoWindow').bind('activate', function () {
+            setFocusById('Name');
+        });
+    }
+
+
+    function editConsignee(e) {
+        e.preventDefault();
+        var dataItem = $("#customerGrid").data("kendoGrid").dataItem(e.sender.element.closest("tr").prev());
+
+        if (e.model.isNew()) {
+            e.model.set("BuyerId", dataItem.CustomerId);
+            e.model.set("IsActive", true);
+        }
+
+        e.container.data('kendoWindow').bind('activate', function () {
+            setFocusById('Name');
+        });
+    }
+</script>

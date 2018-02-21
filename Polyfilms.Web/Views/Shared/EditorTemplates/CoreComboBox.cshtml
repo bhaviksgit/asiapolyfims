@@ -1,0 +1,19 @@
+﻿
+
+@model object
+
+@(Html.Kendo().ComboBoxFor(m => m)
+      
+      .Placeholder("--Select Core --")
+      .DataTextField("Name")
+      .DataValueField("CoreId")
+      
+      .DataSource(source =>
+      {
+          source.Read(read =>
+          {
+              read.Action("GetCoreList", "Common");
+          });
+      })
+      .Events(e => e.Change("onChangeCore"))
+      )

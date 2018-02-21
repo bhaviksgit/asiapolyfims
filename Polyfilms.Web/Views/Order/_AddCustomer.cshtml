@@ -1,0 +1,134 @@
+﻿@model PolyFilms.Data.Models.CustomerModel
+<div class="k-edit-form-container" id="frmCustomer">
+
+    <div class="k-edit-label">
+        @Html.LabelFor(x => x.Name)
+    </div>
+    <div class="k-edit-field">
+        @Html.TextBoxFor(x => x.Name, new { @class = "k-textbox",id="strName" })
+        @Html.ValidationMessageFor(x => x.Name)
+    </div>
+
+    <div class="k-edit-label">
+        @Html.LabelFor(x => x.Address)
+    </div>
+    <div class="k-edit-field">
+        @Html.TextAreaFor(x => x.Address, new { @class = "k-textbox", id = "strAddress" })
+        @Html.ValidationMessageFor(x => x.Address)
+    </div>
+
+    <div class="k-edit-label">
+        @Html.LabelFor(x => x.DeliveryAddress)
+    </div>
+    <div class="k-edit-field">
+        @Html.TextAreaFor(x => x.DeliveryAddress, new { @class = "k-textbox", id = "strDeliveryAddress" })
+        @Html.ValidationMessageFor(x => x.DeliveryAddress)
+    </div>
+    
+    <div class="k-edit-label">
+        @Html.LabelFor(x => x.Location)
+    </div>
+    <div class="k-edit-field">
+        @Html.TextBoxFor(x => x.Location, new { @class = "k-textbox", id = "strLocation" })
+        @Html.ValidationMessageFor(x => x.Location)
+    </div>
+
+    <div class="k-edit-label">
+        @Html.LabelFor(x => x.PhoneNumber)
+    </div>
+    <div class="k-edit-field">
+        @Html.TextBoxFor(x => x.PhoneNumber, new { @class = "k-textbox", id = "strPhoneNumber" })
+        @Html.ValidationMessageFor(x => x.PhoneNumber)
+    </div>
+
+    <div class="k-edit-label">
+        @Html.LabelFor(x => x.PhoneNumber2)
+    </div>
+    <div class="k-edit-field">
+        @Html.TextBoxFor(x => x.PhoneNumber2, new { @class = "k-textbox", id = "strPhoneNumber2" })
+        @Html.ValidationMessageFor(x => x.PhoneNumber2)
+    </div>
+
+    <div class="k-edit-label">
+        @Html.LabelFor(x => x.EmailAddress)
+    </div>
+    <div class="k-edit-field">
+        @Html.TextBoxFor(x => x.EmailAddress, new { @class = "k-textbox", id = "strEmailAddress" })
+        @Html.ValidationMessageFor(x => x.EmailAddress)
+    </div>
+
+    <div class="k-edit-label">
+        @Html.LabelFor(x => x.Gstnumber)
+    </div>
+    <div class="k-edit-field">
+        @Html.TextBoxFor(x => x.Gstnumber, new { @class = "k-textbox", id = "strGstnumber" })
+        @Html.ValidationMessageFor(x => x.Gstnumber)
+    </div>
+
+    <div class="k-edit-label">
+        @Html.LabelFor(x => x.PanNumber)
+    </div>
+    <div class="k-edit-field">
+        @Html.TextBoxFor(x => x.PanNumber, new { @class = "k-textbox", id = "strPanNumber" })
+        @Html.ValidationMessageFor(x => x.PanNumber)
+    </div>
+
+    @*<div class="k-edit-label">
+        @Html.LabelFor(x => x.IsActive)
+    </div>
+    <div class="k-edit-field">
+        @Html.CheckBoxFor(m=>m.IsActive, new { id = "strIsActive" })
+        @Html.ValidationMessageFor(x => x.IsActive)
+    </div>*@
+
+    <div class="k-edit-buttons k-state-default">
+        <a class="k-button k-button-icontext" href="javascript:void(0)" onclick="SaveItem()">Save</a>
+        <a class="k-button k-button-icontext" href="javascript:void(0)" onclick="ClosePopupItems()">Cancel</a>
+    </div>
+
+</div>
+
+<script>
+    $(function () {
+        setupFormValidation('frmCustomer');
+        setFocusById('strName');
+    });
+
+    function SaveItem() {
+        var validator = $("#frmCustomer").data("kendoValidator");
+        if (validator.validate()) {
+            var dataModel = {
+                'Name': getInputValueById('strName'),
+                'Address': getInputValueById('strAddress'),
+                'DeliveryAddress': getInputValueById('strDeliveryAddress'),
+                'Location': getInputValueById('strLocation'),
+                'PhoneNumber': getInputValueById('strPhoneNumber'),
+                'PhoneNumber2': getInputValueById('strPhoneNumber2'),
+                'EmailAddress': getInputValueById('strEmailAddress'),
+                'Gstnumber': getInputValueById('strGstnumber'),
+                'PanNumber': getInputValueById('strPanNumber'),
+                'IsActive': getInputValueById('strIsActive')
+            };
+
+
+            var url = '@Url.Action("SaveCustomer", "Order")';
+            callwebservice(url, dataModel, saveCustomerCompleted, false, datatypeEnum.text, typeEnum.post);
+        }
+    }
+
+    function saveCustomerCompleted(returString) {
+        if (returString != null) {
+            if (returString === "0") {
+                showMessageOnly('Something went wrong please try again.', 'popup-error');
+            } else {
+                readkendoComboBox('BuyerId');
+                closeKendoWindow("wCustomer");
+                setInputValueById('BuyerId', returString);
+            }
+        }
+    }
+
+    function ClosePopupItems() {
+        closeKendoWindow("wCustomer");
+    }
+</script>

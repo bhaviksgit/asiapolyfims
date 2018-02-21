@@ -1,0 +1,59 @@
+﻿@using PolyFilms.Data.CustomModel
+
+<style>
+    .k-edit-form-container {
+        width: 985px !important;
+    }
+</style>
+
+
+<div class="k-edit-form-container">
+    @(Html.Kendo().Grid<InvoiceSlittingList>()
+                                .Name("dispatchNSlittingGrid")
+                                .Columns(columns =>
+                                {
+
+                                    columns.Bound(d => d.SlittingRollNo).HtmlAttributes(WebHelper.StatusColumnStyle).HeaderHtmlAttributes(WebHelper.StatusColumnStyle);
+                                    columns.Bound(d => d.OrderNo).HtmlAttributes(WebHelper.StatusColumnStyle).HeaderHtmlAttributes(WebHelper.StatusColumnStyle);
+                                    columns.Bound(d => d.Product).HtmlAttributes(WebHelper.StatusColumnStyle).HeaderHtmlAttributes(WebHelper.StatusColumnStyle);
+                                    columns.Bound(d => d.Width).HtmlAttributes(WebHelper.SmallColumnStyle).HeaderHtmlAttributes(WebHelper.SmallColumnStyle);
+                                    columns.Bound(d => d.Thickness).HtmlAttributes(WebHelper.SmallColumnStyle).HeaderHtmlAttributes(WebHelper.SmallColumnStyle);
+                                    columns.Bound(d => d.Quality).HtmlAttributes(WebHelper.SmallColumnStyle).HeaderHtmlAttributes(WebHelper.SmallColumnStyle);
+                                    columns.Bound(d => d.Netweight).HtmlAttributes(WebHelper.SmallColumnStyle).HeaderHtmlAttributes(WebHelper.SmallColumnStyle);
+                                    columns.Bound(d => d.UnitPrice).HtmlAttributes(WebHelper.SmallColumnStyle).HeaderHtmlAttributes(WebHelper.SmallColumnStyle).EditorTemplateName("NumericTextbox");
+                                })
+                                 .Editable(editable =>
+                                 {
+                                     editable.Mode(GridEditMode.InCell);
+                                 })
+                                .Sortable(sortable => sortable.AllowUnsort(false))
+                                .Filterable(filter => filter.Enabled(false))
+                                .NoRecords()
+                                .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .ServerOperation(true)
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.SlittingId);
+                                    model.Field(p => p.SlittingRollNo).Editable(false);
+                                    model.Field(p => p.OrderNo).Editable(false);
+                                    model.Field(p => p.Product).Editable(false);
+                                    model.Field(p => p.Width).Editable(false);
+                                    model.Field(p => p.Thickness).Editable(false);
+                                    model.Field(p => p.Quality).Editable(false);
+                                    model.Field(p => p.Netweight).Editable(false);
+                                })
+                                .Events(events => events.Error("onError(\"dispatchNSlittingGrid\")"))
+                                .Read(read => read.Action("KendoReadSlittingByDispatchId", "Invoice").Data("additionalViewInfo"))
+                          ))
+
+    <div class="k-edit-buttons k-state-default">
+        @if (ViewBag.IsFinalize == false)
+        {
+
+            <a class="k-button k-button-icontext" href="#" title="Save" onclick=" SaveSlitting()">Save</a>
+            <a class="k-button k-button-icontext" href="#" title="Reset" onclick=" ResetGrid()">Reset</a>
+        }
+        <a class="k-button k-button-icontext" href="#" title="Cancel" onclick=" ClosePopup()">Cancel</a>
+    </div>
+    </div>

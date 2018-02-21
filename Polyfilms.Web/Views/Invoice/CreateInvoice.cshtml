@@ -1,0 +1,416 @@
+﻿@using Kendo.Mvc.UI;
+@model PolyFilms.Data.Models.InvoiceModel
+@using PolyFilms.Common
+@using PolyFilms.Data.CustomModel
+@{
+    ViewBag.Title = "Invoice";
+}
+<div class="page-title">
+    <div>
+        <h1><i class="fa fa-file-text-o"></i> Manage Invoice </h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+
+        @using (Html.BeginForm("SaveInvoice", "Invoice", FormMethod.Post, new { @class = "form-horizontal", @id = "validation-form-invoice" }))
+        {
+            <div class="box">
+                <div class="box-content">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            @if (Model.InvoiceId > 0)
+                            {
+                                <div class="form-group">
+                                    <div class="col-sm-12 col-lg-12" style="font-weight:bold !important;font-size:18px;">
+                                        @Html.DisplayFor(m => m.InvoiceNo)
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        @if (!Model.IsFinalize)
+                        {
+                            <div class="col-lg-6 text-right">
+                                <input type="submit" class="btn btn-primary" value="Save" name="create" onclick="return saveInvoice()">
+                                <input type="submit" class="btn btn-primary" value="Save & Continue" name="create" onclick="return saveInvoice()">
+                                @if (Model.InvoiceId > 0)
+                                {
+                                    <input type="submit" class="btn btn-primary" value="Finalize Invoice" name="create" onclick="return saveInvoice()">
+                                }
+                                <a href="@Url.Action("Create", "Invoice")" class="btn btn-primary">New</a>
+                                <a href="@Url.Action("Index", "Invoice")" class="btn btn-primary">Back</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-lg-6 text-right">
+                                <a href="@Url.Action("Index","Invoice")" class="btn btn-primary">Back</a>
+                            </div>
+                        }
+                    </div>
+
+
+                </div>
+            </div>
+
+            <div class="box">
+                <div class="box-title">
+                    <h3>
+                        <i class="fa fa-bars"></i>Invoice Details
+                    </h3>
+                </div>
+                <div class="box-content">
+                    @Html.HiddenFor(m => m.InvoiceId)
+                    @Html.HiddenFor(m => m.InvoiceNo)
+                    @Html.HiddenFor(m => m.Day)
+                    @Html.HiddenFor(m => m.Month)
+                    @Html.HiddenFor(m => m.Year)
+                    @Html.HiddenFor(m => m.SequenceNo)
+                    @Html.HiddenFor(m => m.checkedDispatchId)
+                    @Html.HiddenFor(m => m.IsFinalize)
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(x => x.InvoiceDate, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().DatePickerFor(m => m.InvoiceDate).HtmlAttributes(new { @tabindex = 1 })
+                                    @Html.ValidationMessageFor(x => x.InvoiceDate)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.CustomerId, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @(Html.Kendo().ComboBoxFor(m => m.CustomerId)
+                                          .Value(Model.CustomerId == 0 ? string.Empty : Model.CustomerId.ToString())
+                                          .Placeholder("--Select Buyer --")
+                                          .HtmlAttributes(new { @tabindex = 2 })
+                                          .DataTextField("Name")
+                                          .DataValueField("CustomerId")
+                                          .DataSource(source =>
+                                          {
+                                              source.Read(read =>
+                                              {
+                                                  read.Action("GetCustomerList", "Common");
+                                              });
+                                          })
+                                          .Events(e => e.Change("OnchangetoClearIndexCommon")))
+
+                                    @Html.ValidationMessageFor(m => m.CustomerId)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ConsigneeId, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @(Html.Kendo().ComboBoxFor(m => m.ConsigneeId)
+                                          .Value(Model.ConsigneeId == 0 ? string.Empty : Model.ConsigneeId.ToString())
+                                          .Placeholder("--Select Consignee --")
+                                          .DataTextField("Name")
+                                          .DataValueField("ConsigneeId")
+                                          .HtmlAttributes(new { @tabindex = 3 })
+
+                                          .DataSource(source =>
+                                          {
+                                              source.Read(read =>
+                                              {
+                                                  read.Action("GetConsigneeListFromBuyer", "Common").Data("getBuyerId");
+                                              })
+                                                  .ServerFiltering(true);
+                                          })
+                                          .Events(e => e.Change("OnCustomerChange"))
+                                          .Enable(false)
+                                          .AutoBind(false)
+                                          .CascadeFrom("CustomerId"))
+
+                                    @Html.ValidationMessageFor(m => m.ConsigneeId)
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Remarks, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.TextAreaFor(model => model.Remarks, new { @class = "k-textbox", style = "width: 100%;", @tabindex = "8" })
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.IsIGSTInvoice, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls" style="margin-top: 9px;">
+                                    @Html.Kendo().CheckBoxFor(m => m.IsIGSTInvoice).HtmlAttributes(new { @tabindex = 4 })
+                                    @Html.ValidationMessageFor(m => m.IsIGSTInvoice)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Sgst, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().NumericTextBoxFor(m => m.Sgst).Min(0).Spinners(false).HtmlAttributes(new { @tabindex = 5 })
+                                    @Html.ValidationMessageFor(m => m.Sgst)
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Igst, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().NumericTextBoxFor(m => m.Igst).Min(0).Spinners(false).HtmlAttributes(new { @tabindex = 6 })
+                                    @Html.ValidationMessageFor(m => m.Igst)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Cgst, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().NumericTextBoxFor(m => m.Cgst).Min(0).Spinners(false).HtmlAttributes(new { @tabindex = 7 })
+                                    @Html.ValidationMessageFor(m => m.Cgst)
+                                </div>
+                            </div>
+
+                            
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="box">
+                <div class="box-title">
+                    <h3>
+                        <i class="fa fa-bars"></i>Dispatch Details
+                    </h3>
+                </div>
+                <div class="box-content">
+                    <div class="row">
+                        <div class="col-md-12">
+                            @(Html.Kendo().Grid<InvoiceDispatchList>()
+                                  .Name("dispatForInvoiceGrid")
+                                  .Columns(columns =>
+                                  {
+                                      columns.Bound(p => p.DispatchId)
+                                          .ClientTemplate("<input type='checkbox' class='chkDispatchItem' value='#= DispatchId #' onclick='CheckDispatchAll(this)' #= IsChecked ? checked='checked':'' #/>")
+                                          .ClientHeaderTemplate("<input type='checkbox' id='chkDispatchItemHeader' onclick='CheckDispatchHeader(this)'/>")
+                                          .HtmlAttributes(WebHelper.StatusColumnStyle)
+                                          .HeaderHtmlAttributes(WebHelper.StatusColumnStyle).Filterable(false).Sortable(false);
+                                      columns.Bound(d => d.DispatchNo);
+                                      columns.Bound(d => d.DispatchDate).Format("{0:" + CommonHelper.DateFormate + "}");
+                                      columns.Bound(d => d.Remarks);
+                                      columns.Bound(d => d.AppGrossWeight);
+                                      columns.Command(command =>
+                                      {
+                                          command.Custom("AddRate").Text("Add Rate").HtmlAttributes(new { @style = "margin:2px" }).Click("onAddRate");
+                                      }).Title("Action").HtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanEdit)
+                                          .HeaderHtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanEdit);
+                                  })
+                                  .Sortable(sortable => sortable.AllowUnsort(false))
+                                  .Filterable(filter => filter.Enabled(false))
+                                  .NoRecords()
+
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .ServerOperation(true)
+                                      .Model(model => model.Id(d => d.DispatchId))
+                                      .Events(events => events.Error("onError(\"dispatForInvoiceGrid\")"))
+                                      .Read(read => read.Action("KendoReadDispatch", "Invoice").Data("additionalInfo"))
+                                  ))
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        }
+    </div>
+
+</div>
+
+@(Html.Kendo().Window()
+      .Name("wDispatchDetail")
+      .Title("Dispatch Details")
+      .Visible(false)
+      .Draggable(true)
+      .Modal(true)
+      .Width(1000)
+      .Height(400))
+
+<script>
+    $(function () {
+        intializeValidator();
+        setupFormValidation('validation-form');
+        setFocusById('InvoiceDate');
+    });
+
+    function intializeValidator() {
+        $("#validation-form-invoice").kendoValidator({
+            rules: {
+                sgstRule: function (input) {
+                    if (input.is("[name=Sgst]")) {
+                        var checkBox = $("#IsIGSTInvoice").is(':checked');
+                        if (checkBox === false) {
+                            if ($(input).val() === "")
+                                    return false;
+                        }   
+                    }
+                    return true;
+                },
+                cgstRule: function (input) {
+                    if (input.is("[name=Cgst]")) {
+                        var checkBox = $("#IsIGSTInvoice").is(':checked');
+                        if (checkBox === false) {
+                            if ($(input).val() === "")
+                                    return false;
+                        }
+                    }
+                    return true;
+                },
+                igstRule: function (input) {
+                    if (input.is("[name=Igst]")) {
+                        debugger;
+                        var checkBox = $("#IsIGSTInvoice").is(':checked');
+                        if (checkBox === true) {
+                            if($(input).val() === "")
+                                    return false;
+                        }
+                    }
+                    return true;
+                }
+            },
+            messages: {
+                sgstRule: "Sgst is required.",
+                cgstRule: "Cgst is required.",
+                igstRule:"Igst is required."
+            }
+        }).data("kendoValidator");
+    }
+
+
+    function OnCustomerChange() {
+        if (this.value && this.selectedIndex === -1) {
+            this.value("");
+            return;
+        }
+
+        readKendoGrid('dispatForInvoiceGrid');
+    }
+
+    function additionalInfo() {
+        return {
+            customerId: getKendComboboxValue('CustomerId'),
+            consigneeId: getKendComboboxValue('ConsigneeId'),
+            invoiceId: getInputValueById('InvoiceId'),
+            isFinalize: getInputValueById('IsFinalize')
+        };
+    }
+
+    function onAddRate(e) {
+        e.preventDefault();
+        var tr = $(e.target).closest("tr");
+        var data = this.dataItem(tr);
+
+        if (data != null) {
+            setLocalValue('dispatchID', data.DispatchId);
+            var urllink = '@Url.Action("GetSlittingByDispatchId", "Invoice")';
+            var window = $("#wDispatchDetail").data("kendoWindow");
+            window.refresh({
+                url: urllink,
+                data: { "IsFinalize": getInputValueById('IsFinalize') }
+            });
+            window.center();
+            window.open();
+        }
+    }
+
+    function additionalViewInfo() {
+        return {
+            dispatchId: getLocalValue('dispatchID')
+        }
+    }
+
+    function ClosePopup() {
+        closeKendoWindow("wDispatchDetail");
+    }
+
+    function ResetGrid() {
+        clearKendoGridDatasource('dispatchNSlittingGrid');
+        readKendoGrid('dispatchNSlittingGrid');
+    }
+
+
+    function SaveSlitting() {
+        var url = '@Url.Action("SaveSlittingRate", "Invoice")';
+        var gridData = $("#dispatchNSlittingGrid").data("kendoGrid").dataSource.data();
+        var paramValue = kendo.stringify(gridData);
+        callwebservice(url,{ model: paramValue }, saveSlittingCompleted, false, datatypeEnum.text, typeEnum.post);
+    }
+
+    function saveSlittingCompleted(returString) {
+        if (returString != null) {
+            if (returString !== "") {
+                showMessageOnly(returString, 'popup-error');
+            } else {
+                ClosePopup();
+            }
+        }
+    }
+
+    function CheckDispatchAll(e) {
+        var chkItem = $('.chkDispatchItem');
+        var chkHeader = $('#chkDispatchItemHeader');
+
+
+        if ($('#dispatForInvoiceGrid ' + chkItem.selector).length !== 0 && $('#dispatForInvoiceGrid ' + chkItem.selector).length === $('#dispatForInvoiceGrid ' + chkItem.selector + ':Checked').length) {
+            if (chkHeader.length > 0) {
+                $(chkHeader[0]).prop('checked', true);
+            }
+        } else {
+            if (chkHeader.length > 0) {
+                $(chkHeader[0]).prop('checked', false);
+            }
+        }
+
+    }
+
+    function CheckDispatchHeader(chkHeader) {
+        var chkItem = $('.chkDispatchItem');
+        if ($(chkHeader).is(':checked')) {
+            $(chkItem).prop('checked', true);
+        } else {
+            $(chkItem).prop('checked', false);
+        }
+    }
+
+    function saveInvoice() {
+        debugger;
+        var validator = $("#validation-form-invoice").data("kendoValidator");
+        if (validator.validate()) {
+            var selectedSlittingIdArray = [];
+            $('#dispatForInvoiceGrid').eq(0).find("tbody tr .chkDispatchItem").each(function (i, el) {
+                if ($(el).is(':checked') === true) {
+                    selectedSlittingIdArray.push($(el).val());
+                }
+            });
+            $("#checkedDispatchId").val(selectedSlittingIdArray);
+            if (selectedSlittingIdArray.length === 0) {
+                showMessageOnly('Please select atleast one dispatch for invoicing.', 'popup-error');
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+    }
+
+
+    function getBuyerId(e) {
+        var dataitem = $('#CustomerId').data("kendoComboBox").dataItem($('#CustomerId').data("kendoComboBox").select());
+        return {
+            buyerId: dataitem.CustomerId
+        }
+    }
+</script>
+
+

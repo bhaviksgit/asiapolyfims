@@ -1,0 +1,531 @@
+﻿@using Kendo.Mvc.UI;
+@using PolyFilms.Data.CustomModel;
+@model PolyFilms.Data.Models.DispatchModel
+@using PolyFilms.Common
+
+@{
+    ViewBag.Title = "Disptach";
+}
+
+<div class="page-title">
+    <div>
+        <h1><i class="fa fa-files-o"></i> Manage Dispatch </h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("SaveDispatch", "Dispatch", FormMethod.Post, new { @class = "form-horizontal", @id = "validation-form" }))
+        {
+            <div class="box">
+                <div class="box-content">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            @if (Model.DispatchId > 0)
+                            {
+                                <div class="form-group">
+                                    <div class="col-sm-12 col-lg-12" style="font-weight: bold !important; font-size: 18px;">
+                                        @Html.DisplayFor(m => m.DispatchNo)
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        @if (!Model.IsFinalize)
+                        {
+                            <div class="col-lg-6 text-right">
+                                <input type="submit" class="btn btn-primary" value="Save" name="create" onclick="return saveDispatch()">
+                                <input type="submit" class="btn btn-primary" value="Save & Continue" name="create" onclick="return saveDispatch()">
+                                @if (Model.DispatchId > 0)
+                                {
+                                    <input type="submit" class="btn btn-primary" value="Finalize Dispatch" name="create" onclick="return saveDispatch()">
+                                }
+                                <a href="@Url.Action("Create", "Dispatch")" class="btn btn-primary">New</a>
+                                <a href="@Url.Action("Index", "Dispatch")" class="btn btn-primary">Back</a>
+                            </div>
+
+                        }
+                        else
+                        {
+                            <div class="col-lg-6 text-right">
+                                <a href="@Url.Action("Index", "Dispatch")" class="btn btn-primary">Back</a>
+                            </div>
+                        }
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="box">
+                <div class="box-title">
+                    <h3>
+                        <i class="fa fa-bars"></i>Basic Details
+                    </h3>
+                </div>
+                <div class="box-content">
+                    @Html.HiddenFor(m => m.DispatchId)
+                    @Html.HiddenFor(m => m.DispatchNo)
+                    @Html.HiddenFor(m => m.Day)
+                    @Html.HiddenFor(m => m.Month)
+                    @Html.HiddenFor(m => m.Year)
+                    @Html.HiddenFor(m => m.SequenceNo)
+                    @Html.HiddenFor(m => m.checkedSlittingId)
+                    @Html.HiddenFor(m => m.IsFinalize)
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(x => x.DispatchDate, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @if (Model.DispatchId > 0)
+                                    {
+                                        @Html.Kendo().DatePickerFor(m => m.DispatchDate).HtmlAttributes(new { @tabindex = 1, @readonly = "readonly" })
+                                    }
+                                    else
+                                    {
+                                        @Html.Kendo().DatePickerFor(m => m.DispatchDate).HtmlAttributes(new { @tabindex = 1 })
+                                        @Html.ValidationMessageFor(x => x.DispatchDate)
+                                    }
+
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.BuyerId, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @(Html.Kendo().ComboBoxFor(m => m.BuyerId)
+                                          .Value(Model.BuyerId == 0 ? string.Empty : Model.BuyerId.ToString())
+                                          .Placeholder("--Select Buyer --")
+                                          .DataTextField("Name")
+                                          .DataValueField("CustomerId")
+                                          .HtmlAttributes(new { @tabindex = 2 })
+                                          .DataSource(source =>
+                                          {
+                                              source.Read(read =>
+                                              {
+                                                  read.Action("GetCustomerList", "Common");
+                                              });
+                                          })
+                                          .Events(e => e.Change("OnchangetoClearIndexCommon"))
+                                    )
+
+                                    @Html.ValidationMessageFor(m => m.BuyerId)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ConsigneeId, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @(Html.Kendo().ComboBoxFor(m => m.ConsigneeId)
+                                          .Value(Model.ConsigneeId == 0 ? string.Empty : Model.ConsigneeId.ToString())
+                                          .Placeholder("--Select Consignee --")
+                                          .DataTextField("Name")
+                                          .DataValueField("ConsigneeId")
+                                          .HtmlAttributes(new { @tabindex = 3 })
+
+                                          .DataSource(source =>
+                                          {
+                                              source.Read(read =>
+                                              {
+                                                  read.Action("GetConsigneeListFromBuyer", "Common").Data("getBuyerId");
+                                              })
+                                                  .ServerFiltering(true);
+                                          })
+                                          .Events(e => e.Change("OnCustomerChange"))
+                                          .Enable(false)
+                                          .AutoBind(false)
+                                          .CascadeFrom("BuyerId"))
+
+                                    @Html.ValidationMessageFor(m => m.ConsigneeId)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.TotalRoll, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().NumericTextBoxFor(m => m.TotalRoll).HtmlAttributes(new { @readonly = "readonly" }).Min(0).Spinners(false)
+                                    @Html.ValidationMessageFor(m => m.TotalRoll)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.AppGrossWeight, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().NumericTextBoxFor(m => m.AppGrossWeight).Min(0).HtmlAttributes(new { @readonly = "readonly" }).Spinners(false)
+                                    @Html.ValidationMessageFor(m => m.AppGrossWeight)
+                                </div>
+                            </div>
+
+
+
+                        </div>
+
+                        <div class="col-lg-6">
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ModeOfTransport, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().TextBoxFor(m => m.ModeOfTransport).HtmlAttributes(new { @class = "k-textbox", @tabindex = "4" })
+                                    @Html.ValidationMessageFor(m => m.ModeOfTransport)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.NameOfTransporter, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().TextBoxFor(m => m.NameOfTransporter).HtmlAttributes(new { @class = "k-textbox", @tabindex = "5" })
+                                    @Html.ValidationMessageFor(m => m.NameOfTransporter)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.VehicleNo, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().TextBoxFor(m => m.VehicleNo).HtmlAttributes(new { @class = "k-textbox", @tabindex = "6" })
+                                    @Html.ValidationMessageFor(m => m.VehicleNo)
+                                </div>
+                            </div>
+
+
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Lrno, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().TextBoxFor(m => m.Lrno).HtmlAttributes(new { @class = "k-textbox", @tabindex = "7" })
+                                    @Html.ValidationMessageFor(m => m.Lrno)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Remarks, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.TextAreaFor(model => model.Remarks, new { @class = "k-textbox", style = "width: 100%;", @tabindex = "8" })
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="box">
+                <div class="box-title">
+                    <h3>
+                        <i class="fa fa-bars"></i>Slitting List
+                    </h3>
+                </div>
+                <div class="box-content">
+                    <div class="row">
+                        <div class="col-md-12">
+                            @(Html.Kendo().Grid<DispatchSlittingList>()
+                                  .Name("dispatchslittingGrid")
+                                  .Columns(columns =>
+                                  {
+                                      if (!Model.IsFinalize)
+                                      {
+                                          columns.Bound(p => p.SlittingId)
+                                              .ClientTemplate("#if(OrderNo != null)" +
+                                                              "{ #<input type='checkbox' class='chkSlittingItem' value='#= SlittingId #' onclick='CheckSlittingAll(this)' #= IsChecked ? checked='checked':'' #/> #}" +
+                                                              "else {#<a href='javascript:void(0);' class='k-button k-button-icontext' onclick='addOrderToSlitting(this)'>Assign Order</a>#}" +
+                                                              "#")
+                                              .ClientHeaderTemplate("<input type='checkbox' id='chkSlittingItemHeader' onclick='CheckSlittingHeader(this)'/>")
+                                              .HtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanStatus)
+                                              .HeaderHtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanStatus).Filterable(false).Sortable(false);
+                                      }
+
+                                      columns.Bound(d => d.OrderNo);
+                                      columns.Bound(d => d.SlittingDate).Format("{0:" + CommonHelper.DateFormate + "}");
+                                      columns.Bound(d => d.SlittingRollNo);
+                                      columns.Bound(d => d.ProductName);
+                                      columns.Bound(d => d.QualityName);
+                                      columns.Bound(d => d.Length);
+                                      columns.Bound(d => d.Width);
+                                      columns.Bound(d => d.Od);
+                                      columns.Bound(d => d.Thickness);
+                                      columns.Bound(d => d.Grossweight).HtmlAttributes(new { @class = "grossWeigth" });
+                                      if (!Model.IsFinalize)
+                                      {
+                                          columns.Command(command =>
+                                          {
+                                              command.Custom("Remove Order").Text("Remove").HtmlAttributes(new { @style = "margin:2px", @class = "removeBtn" }).Click("onRemoveOrderClick");
+                                          }).Title("Remove Order").HtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanEdit).HeaderHtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanEdit);
+                                      }
+
+
+                                  })
+                                  .Sortable(sortable => sortable.AllowUnsort(false))
+                                  .Filterable(filter => filter.Enabled(false))
+                                  .NoRecords()
+                                  .Events(e => e.DataBound("onDataBoundDispatch"))
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .ServerOperation(true)
+                                      .Model(model => model.Id(d => d.SlittingId))
+                                      .Events(events => events.Error("onError(\"dispatchslittingGrid\")").RequestEnd("onRequestEnd"))
+                                      .Read(read => read.Action("KendoReadSlitting", "Dispatch").Data("additionalInfo"))
+                                  ))
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@(Html.Kendo().Window()
+      .Name("wAssignOrder")
+      .Title("Assign Order To Slit")
+      .Visible(false)
+      .Draggable(true)
+      .Modal(true)
+      .Width(730)
+      .Height(400))
+
+
+
+<script>
+    $(function () {
+        setupFormValidation('validation-form');
+        setFocusById('DispatchDate');
+    });
+
+    function filterCustomerOrder(e) {
+        var dataitem = $('#CustomerId').data("kendoComboBox").dataItem($('#CustomerId').data("kendoComboBox").select());
+        return {
+            customerId: dataitem.CustomerId
+        }
+    }
+
+    function OnCustomerChange() {
+        if (this.value && this.selectedIndex === -1) {
+            this.value("");
+            return;
+        }
+        readKendoGrid('dispatchslittingGrid');
+    }
+
+    function additionalInfo() {
+        return {
+            dispatchId: getInputValueById('DispatchId'),
+            buyerId: getKendComboboxValue('BuyerId'),
+            consigneeId: getKendComboboxValue('ConsigneeId'),
+            isFinalize: getInputValueById('IsFinalize')
+        };
+    }
+
+    function CheckSlittingAll(e) {
+       
+        var chkItem = $('.chkSlittingItem');
+        var chkHeader = $('#chkSlittingItemHeader');
+
+        var totalChecked = $('#dispatchslittingGrid ' + chkItem.selector + ':Checked').length;
+        setkendoNumericTextBoxValue('TotalRoll', totalChecked);
+
+
+        if ($('#dispatchslittingGrid ' + chkItem.selector).length !== 0 && $('#dispatchslittingGrid ' + chkItem.selector).length === $('#dispatchslittingGrid ' + chkItem.selector + ':Checked').length) {
+            if (chkHeader.length > 0) {
+                $(chkHeader[0]).prop('checked', true);
+            }
+        } else {
+            if (chkHeader.length > 0) {
+                $(chkHeader[0]).prop('checked', false);
+            }
+        }
+
+        var state = $(e).is(':checked');
+        var grid = $('#dispatchslittingGrid').data().kendoGrid;
+        var dataItem = grid.dataItem($(e).closest('tr'));
+
+       
+
+        if (state === true) {
+            dataItem.set('IsChecked', true);
+        }
+
+        if (state === false) {
+            dataItem.set('IsChecked', false);
+        }
+
+        grid.refresh();
+
+        calculateGrossWeight();
+    }
+
+
+    function calculateGrossWeight() {
+        var grossWeight = 0.0;
+        var gridData = $("#dispatchslittingGrid").getKendoGrid().dataSource.data();
+        for (var a = 0; a < gridData.length; a++) {
+            if (gridData[a].IsChecked === true) {
+                grossWeight = grossWeight + gridData[a].Grossweight;
+            }
+        }
+        setkendoNumericTextBoxValue('AppGrossWeight', grossWeight);
+    }
+
+    function calculateTotalRoll() {
+        var chkItem = $('.chkSlittingItem');
+
+        var totalChecked = $('#dispatchslittingGrid ' + chkItem.selector + ':Checked').length;
+        setkendoNumericTextBoxValue('TotalRoll', totalChecked);
+    }
+
+    function CheckSlittingHeader(chkHeader) {
+        var chkItem = $('.chkSlittingItem');
+
+        if ($(chkHeader).is(':checked')) {
+            $(chkItem).prop('checked', true);
+            calculateGrossWeightForAll();
+        }
+            
+         else {
+            $(chkItem).prop('checked', false);
+            setkendoNumericTextBoxValue('AppGrossWeight', 0);
+        }
+        calculateTotalRoll();
+        
+    }
+
+    function calculateGrossWeightForAll() {
+        var totalWeight = 0.0;
+        var grid = $("#dispatchslittingGrid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].Grossweight != null && gridData[i].OrderId != null) {
+                totalWeight = totalWeight + gridData[i].Grossweight;
+            }
+        }
+        setkendoNumericTextBoxValue('AppGrossWeight', totalWeight);
+    }
+
+    function saveDispatch() {
+        var selectedSlittingIdArray = [];
+        $('#dispatchslittingGrid').eq(0).find("tbody tr .chkSlittingItem").each(function (i, el) {
+            if ($(el).is(':checked') === true) {
+                selectedSlittingIdArray.push($(el).val());
+            }
+        });
+        $("#checkedSlittingId").val(selectedSlittingIdArray);
+        if (selectedSlittingIdArray.length === 0) {
+
+            showMessageOnly('Please select atleast one slit roll to create a dispatch.', 'popup-error');
+
+            return false;
+        }
+        else {
+            return true;
+        }
+
+    }
+
+    function getBuyerId() {
+        var dataitem = $('#BuyerId').data("kendoComboBox").dataItem($('#BuyerId').data("kendoComboBox").select());
+        return {
+            buyerId: dataitem.CustomerId
+        }
+    }
+
+
+    function addOrderToSlitting(e) {
+        var grid = $('#dispatchslittingGrid').data().kendoGrid;
+        var dataItem = grid.dataItem($(e).closest('tr'));
+        var productId = dataItem.ProductId;
+        setLocalValue('slittingIdForDispatch', dataItem.SlittingId);
+        setLocalValue('productIdForDispatch', productId);
+
+            var urllink = '@Url.Action("OpenAssignOrderPopup", "Dispatch")';
+            var window = $("#wAssignOrder").data("kendoWindow");
+            window.refresh({
+                url: urllink
+            });
+            window.center();
+            window.open();
+
+    }
+
+    function additionalViewInfo() {
+        return {
+            buyerId: getKendComboboxValue('BuyerId'),
+            consigneeId: getKendComboboxValue('ConsigneeId'),
+            productId: getLocalValue('productIdForDispatch')
+        };
+    }
+
+    function onAssignOrderClick(e) {
+        bootbox.confirm('Are you sure you want to assign work order from this slitting?', function (result) {
+            if (result === true) {
+                e.preventDefault();
+                var grid = $("#dispatchorderGrid").data("kendoGrid");
+                var tr = $(e.target).closest("tr");
+                var data = grid.dataItem(tr);
+
+                var url = '@Url.Action("AssignOrderToSlit", "Dispatch")';
+                if (data != null)
+                    callwebservice(url, { "slittingId": getLocalValue('slittingIdForDispatch'), "orderId": data.OrderId }, assignOrderCompleted, false, datatypeEnum.text, typeEnum.post);
+            }
+        }, 'popup-confirmation');
+    }
+
+    function assignOrderCompleted(returString) {
+        if (returString != null) {
+            if (returString !== "") {
+                showMessageOnly(returString, 'popup-error');
+            } else {
+                readKendoGrid('dispatchslittingGrid');
+            }
+        }
+        closeKendoWindow("wAssignOrder");
+    }
+
+    function onRemoveOrderClick(e) {
+        bootbox.confirm('Are you sure you want to remove work order from this slitting?', function (result) {
+            if (result === true) {
+                e.preventDefault();
+                var grid = $("#dispatchslittingGrid").data("kendoGrid");
+                var tr = $(e.target).closest("tr");
+                var data = grid.dataItem(tr);
+                var url = '@Url.Action("RemoveOrderFromSlit", "Dispatch")';
+                if (data != null)
+                    callwebservice(url, { "slittingId": data.SlittingId }, removeOrderCompleted, false, datatypeEnum.text, typeEnum.post);
+            }
+        }, 'popup-confirmation');
+    }
+
+    function removeOrderCompleted(returString) {
+        if (returString != null) {
+            if (returString !== "") {
+                showMessageOnly(returString, 'popup-error');
+            } else {
+                readKendoGrid('dispatchslittingGrid');
+            }
+        }
+    }
+
+    function onDataBoundDispatch(e) {
+        var grid = $("#dispatchslittingGrid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].OrderNo == null) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var removeOrderButton = $(currenRow).find(".removeBtn");
+                removeOrderButton.hide();
+            }
+        }
+    }
+
+    function onRequestEnd(e) {
+        if (!e.response.Errors) {
+            setTimeout(calculateGrossWeight, 500);
+            setTimeout(calculateTotalRoll, 500);
+            $("#chkSlittingItemHeader").attr('checked', false);
+        }
+    }
+</script>
+
+

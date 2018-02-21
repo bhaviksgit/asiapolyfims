@@ -1,0 +1,552 @@
+﻿@using Kendo.Mvc.UI;
+@using System.Collections
+@model PolyFilms.Data.Models.BasicSlittingDetailModel
+
+@{
+    ViewBag.Title = "Close Slitting Batch";
+}
+
+<style>
+    .k-grid-edit-row .k-autocomplete,
+    .k-grid-edit-row .k-datepicker,
+    .k-grid-edit-row .k-timepicker,
+    .k-grid-edit-row .k-datetimepicker,
+    .k-grid-edit-row .k-colorpicker,
+    .k-grid-edit-row .k-numerictextbox,
+    .k-grid-edit-row .k-dropdown,
+    .k-grid-edit-row .k-selectbox,
+    .k-grid-edit-row .k-textbox,
+    .k-grid-edit-row .k-upload {
+        width: 5em !important;
+    }
+
+    .k-grid-edit-row .k-combobox {
+        width: 7.5em !important;
+    }
+
+    .k-grid-edit-row [data-container-for|=OrderId] .k-combobox {
+        width: 12em !important;
+    }
+
+    .k-grid-edit-row [data-container-for|=Remarks] .k-textbox {
+        width: 100% !important;
+    }
+
+    #slittingDetailGrid table {
+        table-layout: fixed;
+    }
+
+    #slittingDetailGrid td {
+        word-wrap: break-word;
+    }
+</style>
+
+
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("SaveAllSlitting", "CreateSlitting", FormMethod.Post, new { @class = "form-horizontal", @id = "validation-form-slitting" }))
+        {
+            <div class="box">
+                <div class="box-content">
+                    <div class="row">
+                        <div class="col-lg-12 text-right">
+                            <input type="button" class="btn btn-primary" value="Search" onclick="onSearchClick()">
+                            <input type="button" id="closeBatch" class="btn btn-primary" value="Close Batch" onclick="SaveAllClick()">
+                            @*<a href="@Url.Action("Index", "Slitting")" class="btn btn-primary">Back</a>*@
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="box">
+                <div class="box-title">
+                    <h3>
+                        <i class="fa fa-bars"></i>Search Details
+                    </h3>
+                </div>
+
+                <div class="box-content">
+                    @*@Html.HiddenFor(m => m.Day)
+                    @Html.HiddenFor(m => m.Month)
+                    @Html.HiddenFor(m => m.Year)
+                    @Html.HiddenFor(m => m.SequenceNo)
+                    @Html.HiddenFor(m => m.IsPrimarySlitting)*@
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(x => x.SlittingDate, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().DatePickerFor(m => m.SlittingDate).HtmlAttributes(new { @tabindex = 1, @id = "SlittingDate" })
+                                    @Html.ValidationMessageFor(x => x.SlittingDate)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ShiftId, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @(Html.Kendo().ComboBoxFor(m => m.ShiftId)
+                              .Value(Model.ShiftId == 0 ? string.Empty : Model.ShiftId.ToString())
+                              .Placeholder("--Select Shift --")
+                              .DataTextField("Name")
+                              .DataValueField("ShiftId")
+                              .HtmlAttributes(new { @tabindex = 3 })
+                              .DataSource(source =>
+                              {
+                                  source.Read(read =>
+                                  {
+                                      read.Action("GetShiftList", "Common");
+                                  });
+                              })
+                              .Events(e => e.Change("OnchangetoClearIndexCommon")))
+
+                                    @Html.ValidationMessageFor(m => m.ShiftId)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.OperatorId, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @(Html.Kendo().ComboBoxFor(m => m.OperatorId)
+                              .Value(Model.OperatorId == 0 ? string.Empty : Model.OperatorId.ToString())
+                              .Placeholder("--Select Operator --")
+                              .DataTextField("Username")
+                              .DataValueField("UserId")
+                              .HtmlAttributes(new { @tabindex = 4 })
+                              .DataSource(source =>
+                              {
+                                  source.Read(read =>
+                                  {
+                                      read.Action("GetUserList", "Common");
+                                  });
+                              })
+                              .Events(e => e.Change("OnchangetoClearIndexCommon")))
+
+                                    @Html.ValidationMessageFor(m => m.OperatorId)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                        @Html.LabelFor(m => m.JumboJointId1, new { @class = "col-sm-6 col-lg-3 control-label" })
+                        <div class="col-sm-6 col-lg-9 controls">
+                            @(Html.Kendo().ComboBoxFor(m => m.JumboJointId1)
+                                  .Value(Model.JumboJointId1 == 0 ? string.Empty : Model.JumboJointId1.ToString())
+                                  .Placeholder("--Select Jumbo Joint 1--")
+                                  .DataTextField("JumboNo")
+                                  .DataValueField("JumboId")
+                                  .HtmlAttributes(new { @tabindex = 6 })
+                                  .DataSource(source =>
+                                  {
+                                      source.Read(read =>
+                                      {
+                                          read.Action("GetJumboListForJoint", "Common").Data("getjointProductId");
+                                      });
+                                  })
+                                  .AutoBind(false)
+                                  )
+                                        
+                            @Html.ValidationMessageFor(m => m.JumboJointId1)
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.JumboJointId2, new { @class = "col-sm-6 col-lg-3 control-label" })
+                        <div class="col-sm-6 col-lg-9 controls">
+                            @(Html.Kendo().ComboBoxFor(m => m.JumboJointId2)
+                                  .Value(Model.JumboJointId2 == 0 ? string.Empty : Model.JumboJointId2.ToString())
+                                  .Placeholder("--Select Jumbo Joint 2--")
+                                  .DataTextField("JumboNo")
+                                  .DataValueField("JumboId")
+                                  .HtmlAttributes(new { @tabindex = 8 })
+                                  .DataSource(source =>
+                                  {
+                                      source.Read(read =>
+                                      {
+                                          read.Action("GetJumboListForJoint", "Common").Data("getjointProductId");
+                                      });
+                                  })
+                                  .AutoBind(false)
+                                  )
+
+                            @Html.ValidationMessageFor(m => m.JumboJointId2)
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.JumboJointId3, new { @class = "col-sm-6 col-lg-3 control-label" })
+                        <div class="col-sm-6 col-lg-9 controls">
+                            @(Html.Kendo().ComboBoxFor(m => m.JumboJointId3)
+                                  .Value(Model.JumboJointId3 == 0 ? string.Empty : Model.JumboJointId3.ToString())
+                                  .Placeholder("--Select Jumbo Joint 3--")
+                                  .DataTextField("JumboNo")
+                                  .DataValueField("JumboId")
+                                  .HtmlAttributes(new { @tabindex = 10 })
+                                  .DataSource(source =>
+                                  {
+                                      source.Read(read =>
+                                      {
+                                          read.Action("GetJumboListForJoint", "Common").Data("getjointProductId");
+                                      });
+                                  })
+                                  .AutoBind(false)
+                                  )
+
+                            @Html.ValidationMessageFor(m => m.JumboJointId3)
+                        </div>
+                    </div>
+                        </div>
+                        <div class="col-lg-6">
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.JumboId, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @(Html.Kendo().ComboBoxFor(m => m.JumboId)
+                                  .Value(Model.JumboId == 0 ? string.Empty : Model.JumboId.ToString())
+                                  .Placeholder("--Select Jumbo--")
+                                  .DataTextField("JumboNo")
+                                  .DataValueField("JumboId")
+                                  .HtmlAttributes(new { @tabindex = 2, @id = "JumboId" })
+                                  .DataSource(source =>
+                                  {
+                                      source.Read(read =>
+                                      {
+                                          read.Action("GetJumboList", "Common");
+                                      });
+                                  })
+                                  .Events(e => e.Change("OnchangeJumboProduct"))
+                                    )
+                                    <input type="button" class="btn btn-primary" value="View" name="jumbo" onclick="viewJumboDetail()">
+
+                                    @Html.ValidationMessageFor(m => m.JumboId)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ProductId, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @(Html.Kendo().ComboBoxFor(m => m.ProductId)
+                              .Value(Model.ProductId == 0 ? string.Empty : Model.ProductId.ToString())
+                              .Placeholder("--Select Product--")
+                              .DataTextField("Name")
+                              .DataValueField("ProductId")
+                              .HtmlAttributes(new { @readonly = "readonly" })
+                              .DataSource(source =>
+                              {
+                                  source.Read(read =>
+                                  {
+                                      read.Action("GetProductList", "Common");
+                                  });
+                              })
+                                    )
+
+                                    @Html.ValidationMessageFor(m => m.ProductId)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.SetNo, new { @class = "col-sm-6 col-lg-3 control-label" })
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @Html.Kendo().IntegerTextBoxFor(m => m.SetNo).Min(0).Spinners(false).HtmlAttributes(new { @tabindex = "5" })
+                                    @Html.ValidationMessageFor(m => m.SetNo)
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="box">
+                <div class="box-content">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="col-sm-6 col-lg-3 control-label">Net Weight QT</label>
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @(Html.Kendo().NumericTextBox<decimal>()
+                                  .Name("netWtQt")
+                                  .Min(0)
+                                  .Spinners(false)
+                                  .HtmlAttributes(new { title = "Net Weight Qt" })
+                                    )
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-6 col-lg-3 control-label">Balance QT</label>
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @(Html.Kendo().NumericTextBox<decimal>()
+                                  .Name("balanceQt")
+                                  .Min(0)
+                                  .Spinners(false)
+                                  .HtmlAttributes(new { title = "Balance Qt" })
+                                    )
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-lg-6">
+
+                            <div class="form-group">
+                                <label class="col-sm-6 col-lg-3 control-label">Jumbo Weight</label>
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @(Html.Kendo().NumericTextBox()
+                                              .Name("jumboWt")
+                                              .Min(0)
+                                              .Spinners(false)
+                                              .HtmlAttributes(new { title = "Jumbo Weight" })
+                                    )
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-6 col-lg-3 control-label">Waste Weight</label>
+                                <div class="col-sm-6 col-lg-9 controls">
+                                    @(Html.Kendo().NumericTextBox<decimal>()
+                                          .Name("wasteWeight")
+                                          .Min(0)
+                                          .Spinners(false)
+                                          .Events(e => e.Change("onChangeWasteWeight"))
+                                          .HtmlAttributes(new { title = "Waste Weight" })
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="box">
+            <div class="box-title">
+                <h3>
+                    <i class="fa fa-bars"></i>Slitting Detail
+                </h3>
+            </div>
+            <div class="box-content">
+
+                @(Html.Kendo().Grid<PolyFilms.Data.Models.AdditionalSlittingDetailModel>()
+                  .Name("slittingDetailGrid1")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(d => d.SlittingRollNo).Visible(true).Width(105);
+                      columns.Bound(d => d.Location).Width(80);
+                      columns.Bound(d => d.Thickness).Title("Thickness").Width(80);
+                      columns.Bound(d => d.Width).Title("Width").Width(80);
+                      columns.Bound(d => d.Length).Title("Length").Width(80);
+                      columns.Bound(d => d.Joint).Title("Joint").Width(80);
+                      columns.ForeignKey(d => d.CoreId, (IEnumerable)ViewBag.CoreList, "CoreId", "Name").EditorTemplateName("CoreComboBox").Width(110);
+                      columns.Bound(d => d.Grossweight).Width(100).Title("Gross Wt").EditorTemplateName("GrossWtTextBox");
+                      columns.Bound(d => d.Netweight).Visible(true).Width(80).Title("Net Wt").ClientFooterTemplate("<div style='display:none ! important;'>#= BalanceQT(sum) #</div>");
+                      columns.ForeignKey(d => d.TreatmentId, (IEnumerable)ViewBag.TreatmentList, "TreatmentId", "Name").Width(110).Title("TRT");
+                      columns.ForeignKey(d => d.OrderId, (IEnumerable)ViewBag.OrderList, "OrderId", "OrderNo").EditorTemplateName("OrderByJumboComboBox").Width(130);
+                      columns.ForeignKey(d => d.Quality, (IEnumerable)ViewBag.QualityList, "SlittingStatusId", "Name").Width(110).Title("QC Grade");
+                      columns.ForeignKey(d => d.JumboJointId1, (IEnumerable)ViewBag.JumboList, "JumboId", "JumboNo").Width(50).Title("Jumbo Joint1");
+                      columns.ForeignKey(d => d.JumboJointId2, (IEnumerable)ViewBag.JumboList, "JumboId", "JumboNo").Width(50).Title("Jumbo Joint2");
+                      columns.ForeignKey(d => d.JumboJointId3, (IEnumerable)ViewBag.JumboList, "JumboId", "JumboNo").Width(50).Title("Jumbo Joint3");
+                      columns.Bound(d => d.Remarks).Visible(true).Title("Remark").EditorTemplateName("TextArea");
+                  })
+                  
+                  .Pageable(x =>
+                  {
+                      x.Refresh(true);
+                  })
+                  .Sortable(sortable => sortable.AllowUnsort(false))
+                  .Filterable(filter => filter.Enabled(false))
+                  .NoRecords()
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Aggregates(aggregates =>
+                      {
+                          aggregates.Add(p => p.Netweight).Sum();
+                      })
+                      .ServerOperation(false)
+                      .Model(model =>
+                      {
+                          model.Id(d => d.SlittingId);
+                          model.Field(d => d.SlittingRollNo).Editable(false);
+                          model.Field(d => d.Netweight).Editable(false);
+                      })
+                      .Events(events => events.Error("onError(\"slittingDetailGrid\")"))
+                      .Read(read => read.Action("KendoRead", "CloseSlittingBatch").Data("getAdditionalInfo"))
+                  ))
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@(Html.Kendo().Window()
+      .Name("wJumboDetail")
+      .Title("Jumbo Details")
+      .Visible(false)
+      .Draggable(true)
+      .Modal(true)
+      .Width(730)
+      .Height(400))
+
+
+<script type="text/javascript">
+
+    function onSearchClick() {
+        readKendoGrid('slittingDetailGrid1');
+    }
+
+    function getAdditionalInfo() {
+        var jumboId = null;
+        var slittingId = null;
+        jumboId = getKendComboboxValue('JumboId');
+
+        return {
+            slittingDate: getKendoDatePickerValue('SlittingDate'),
+            shiftId: getKendComboboxValue('ShiftId'),
+            operatorId: getKendComboboxValue('OperatorId'),
+            jumboId: jumboId,
+            primarySlittingId: slittingId,
+            setNo: getkendoNumericTextBoxValue('SetNo')
+        }
+    }
+
+    function OnchangeJumboProduct(e) {
+        if (this.value && this.selectedIndex === -1) {
+            this.value("");
+            return;
+        }
+
+        var dataitem = $('#JumboId').data("kendoComboBox").dataItem($('#JumboId').data("kendoComboBox").select());
+        setKendComboboxValue('ProductId', dataitem.ProductId);
+        $('#JumboJointId1').data('kendoComboBox').dataSource.read();
+        $('#JumboJointId2').data('kendoComboBox').dataSource.read();
+        $('#JumboJointId3').data('kendoComboBox').dataSource.read();
+    }
+
+    function getjointProductId() {
+        return {
+            productId: $("#ProductId").val(),
+            jumboId: getKendComboboxValue('JumboId')
+        }
+    }
+
+    function viewJumboDetail() {
+        var jumboId = getKendComboboxValue('JumboId');
+
+        if (jumboId !== "" && jumboId > 0) {
+            var urllink = '@Url.Action("ViewJumboDetail", "Slitting")';
+            var window = $("#wJumboDetail").data("kendoWindow");
+            window.refresh({
+                url: urllink
+            });
+            window.center();
+            window.open();
+        }
+        else {
+            showMessageOnly('Please select Jumbo First', 'popup-error');
+        }
+    }
+
+    function additionalJumboViewInfo() {
+        return {
+            jumboId: getKendComboboxValue('JumboId')
+        }
+    }
+
+    function onChangeWasteWeight() {
+        var waste = getkendoNumericTextBoxValue('wasteWeight');
+        var balanceQt = getkendoNumericTextBoxValue('balanceQt');
+        var balance = balanceQt - waste;
+        setkendoNumericTextBoxValue('balanceQt', balance);
+    }
+
+    function BalanceQT(sum) {
+        
+        var wasteWeight = getkendoNumericTextBoxValue('wasteWeight') === null ? 0 : getkendoNumericTextBoxValue('wasteWeight');
+        setkendoNumericTextBoxValue('netWtQt', sum);
+
+        var totalWeight = 0;
+        var dataitemJumbo = $('#JumboId').data("kendoComboBox");
+        var dataitemJumboJoint1 = $('#JumboJointId1').data("kendoComboBox");
+        var dataitemJumboJoint2 = $('#JumboJointId2').data("kendoComboBox");
+        var dataitemJumboJoint3 = $('#JumboJointId3').data("kendoComboBox");
+
+
+        if (dataitemJumbo != undefined) {
+            var dataitem = dataitemJumbo.dataItem(dataitemJumbo.select());
+            if (dataitem != undefined) {
+                totalWeight = totalWeight + dataitem.RemainingJumbo;
+            }
+        }
+
+        if (dataitemJumboJoint1 != undefined) {
+            var dataitem1 = dataitemJumboJoint1.dataItem(dataitemJumboJoint1.select());
+            if (dataitem1 != undefined) {
+                totalWeight = totalWeight + dataitem1.RemainingJumbo;
+            }
+        }
+
+        if (dataitemJumboJoint2 != undefined) {
+            var dataitem2 = dataitemJumboJoint2.dataItem(dataitemJumboJoint2.select());
+            if (dataitem2 != undefined) {
+                totalWeight = totalWeight + dataitem2.RemainingJumbo;
+            }
+        }
+
+        if (dataitemJumboJoint3 != undefined) {
+            var dataitem3 = dataitemJumboJoint3.dataItem(dataitemJumboJoint3.select());
+            if (dataitem3 != undefined) {
+                totalWeight = totalWeight + dataitem3.RemainingJumbo;
+            }
+        }
+
+        setkendoNumericTextBoxValue('balanceQt', totalWeight - sum - wasteWeight);
+        setkendoNumericTextBoxValue('jumboWt', totalWeight);
+
+    }
+
+    function SaveAllClick() {
+
+        var gridcount = $('#slittingDetailGrid1').data('kendoGrid').dataSource.total();
+        if (gridcount > 0) {
+            var gridDataArray = $('#slittingDetailGrid1').data('kendoGrid')._data;
+            var allSlittingIdArray = [];
+            var columnName = 'SlittingId';
+            for (var index = 0; index < gridDataArray.length; index++) {
+                allSlittingIdArray.push(gridDataArray[index][columnName]);
+            };
+
+            var url = '@Url.Action("SaveAllSlitting", "CreateSlitting")';
+            var model = {
+                "SlittingIds": allSlittingIdArray.toString(),
+                "JumboId": getKendComboboxValue('JumboId'),
+                "JumboJointId1": getKendComboboxValue('JumboJointId1'),
+                "JumboJointId2": getKendComboboxValue('JumboJointId2'),
+                "JumboJointId3": getKendComboboxValue('JumboJointId3'),
+                "WasteWt": getkendoNumericTextBoxValue('wasteWeight'),
+                "TotalWt": getkendoNumericTextBoxValue('netWtQt')
+            };
+
+            callwebservice(url,
+                { model },
+                saveAllSlittingCompleted,
+                false,
+                datatypeEnum.text,
+                typeEnum.post);
+        }
+        else {
+            showMessageOnly("Ther are no Slittings for Close Batch", 'popup-error');
+
+        }
+
+    }
+
+    function saveAllSlittingCompleted(returString) {
+        if (returString != null) {
+            if (returString !== "") {
+                showMessageOnly(returString, 'popup-error');
+            } else {
+                window.location.href = "@Url.Action("Index", "CloseSlittingBatch")";
+            }
+        }
+    }
+</script>

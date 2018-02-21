@@ -1,0 +1,21 @@
+﻿
+@model object
+
+@(Html.Kendo().ComboBoxFor(m => m)
+     
+      .Placeholder("--Select Order --")
+      .DataTextField("OrderNo")
+      .DataValueField("OrderId")
+
+      .DataSource(source =>
+      {
+          source.Read(read =>
+          {
+              read.Action("GetFilterOrderList", "Common").Data("filterJumboProduct");
+          });
+
+      })
+      .HtmlAttributes(new { @data_value_primitive = "true" }))
+      @*.Events(e => e.Change("OnchangetoClearIndexCommon")))*@
+
+

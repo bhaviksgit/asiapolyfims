@@ -1,0 +1,68 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="page-title">
+    <div>
+        <h1><i class="fa fa-desktop"></i> Dashboard</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-title">
+                <h3>
+                    <i class="fa fa-bars"></i>Jumbo Stock
+                </h3>
+            </div>
+            <div class="box-content">
+                @{Html.RenderPartial("~/Views/Home/_JumboRollStock.cshtml");}
+            </div>
+        </div>
+        
+        <div class="box">
+            <div class="box-title">
+                <h3>
+                    <i class="fa fa-bars"></i>Slitting Roll Stock Q1
+                </h3>
+            </div>
+            <div class="box-content">
+                @{Html.RenderPartial("~/Views/Home/_SlittingRollStock.cshtml");}
+            </div>
+        </div>
+        
+        <div class="box">
+            <div class="box-title">
+                <h3>
+                    <i class="fa fa-bars"></i>Slitting Roll Stock Q2
+                </h3>
+            </div>
+            <div class="box-content">
+                @{Html.RenderPartial("~/Views/Home/_SlitingRollStockQ2.cshtml");}
+            </div>
+        </div>
+        
+        @*<div class="box">
+            <div class="box-title">
+                <h3>
+                    <i class="fa fa-bars"></i>Sales Order Register
+                </h3>
+            </div>
+            <div class="box-content">
+                @{Html.RenderPartial("~/Views/Home/_SalesOrderDetail.cshtml");}
+            </div>
+        </div>*@
+        
+        <div class="box">
+            <div class="box-title">
+                <h3>
+                    <i class="fa fa-bars"></i>Pending Production Detail
+                </h3>
+            </div>
+            <div class="box-content">
+                @{Html.RenderPartial("~/Views/Home/_PendingProductionDetail.cshtml");}
+            </div>
+        </div>
+    </div>
+</div>

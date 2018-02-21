@@ -1,0 +1,38 @@
+﻿@using PolyFilms.Data.CustomModel
+@using PolyFilms.Common
+
+<style>
+    .k-edit-form-container {
+        width: 700px !important;
+    }
+</style>
+<div class="k-edit-form-container">
+    @(Html.Kendo().Grid<DispatchOrderList>()
+                    .Name("dispatchorderGrid")
+                    .Columns(columns =>
+                    {
+
+                        columns.Bound(d => d.OrderNo).Title(resLabels.OrderNo).HtmlAttributes(WebHelper.SmallColumnStyle).HeaderHtmlAttributes(WebHelper.SmallColumnStyle) ;
+                        columns.Bound(d => d.OrderDate).Format("{0:" + CommonHelper.DateFormate + "}").HtmlAttributes(WebHelper.SmallColumnStyle).HeaderHtmlAttributes(WebHelper.SmallColumnStyle);
+                        columns.Bound(d => d.Product).HtmlAttributes(WebHelper.StatusColumnStyle).HeaderHtmlAttributes(WebHelper.StatusColumnStyle);
+                        columns.Bound(d => d.TotalQuantity).HtmlAttributes(WebHelper.SmallColumnStyle).HeaderHtmlAttributes(WebHelper.SmallColumnStyle);
+                        columns.Bound(d => d.RemainingQuantity).HtmlAttributes(WebHelper.SmallColumnStyle).HeaderHtmlAttributes(WebHelper.SmallColumnStyle);
+                        columns.Command(command =>
+                                                {
+                                                    command.Custom("Assign Order 1").Text("Assign").HtmlAttributes(new { @style = "margin:2px" }).Click("onAssignOrderClick");
+                                                }).Title("Action").HtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanEdit).HeaderHtmlAttributes(WebHelper.ActionCenterColumnStyleWithCanEdit);
+                    })
+
+
+
+                                      .NoRecords()
+                                      .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .ServerOperation(true)
+
+                                      .Model(model => model.Id(d => d.OrderId))
+                                      .Events(events => events.Error("onError(\"dispatchorderGrid\")"))
+                                      .Read(read => read.Action("KendoReadOrder4Dispatch", "Dispatch").Data("additionalViewInfo"))
+                                      
+                ))
+    </div>

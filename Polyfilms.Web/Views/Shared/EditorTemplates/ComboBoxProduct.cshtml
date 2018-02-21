@@ -1,0 +1,19 @@
+﻿@*@model PolyFilms.Data.Models.OrderDetailModel*@
+@model object
+
+@(Html.Kendo().ComboBoxFor(m => m)
+              //.Value(Model.ProductId == 0 ? string.Empty : Model.ProductId.ToString())
+              .Placeholder("--Select Product --")
+              .DataTextField("Name")
+              .DataValueField("ProductId")
+              .DataSource(source =>
+              {
+                  source.Read(read =>
+                  {
+                      read.Action("GetProductList", "Common");
+                  });
+              })
+              .Events(e=>e.Change("onChnage"))
+)
+
+

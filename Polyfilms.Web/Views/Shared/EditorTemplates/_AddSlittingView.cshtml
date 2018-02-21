@@ -1,0 +1,161 @@
+﻿@model PolyFilms.Data.Models.SlittingModel
+
+    
+<table class="manageTable">
+    <tr>
+        <td>
+            <div class="k-edit-label">
+                @Html.LabelFor(x => x.Location)
+            </div>
+            <div class="k-edit-field">
+                @Html.Kendo().TextBoxFor(m => m.Location).HtmlAttributes(new { @class = "k-textbox", @tabindex = 1 })
+                @Html.ValidationMessageFor(m => m.Location)
+            </div>
+        </td>
+        <td>
+            <div class="k-edit-label">
+                @Html.LabelFor(m => m.Width)
+            </div>
+            <div class="k-edit-field">
+                @Html.Kendo().NumericTextBoxFor(m => m.Width).Min(0).Spinners(false).HtmlAttributes(new { @tabindex = 6 })
+                @Html.ValidationMessageFor(m => m.Width)
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <div class="k-edit-label">
+                @Html.LabelFor(m => m.Length)
+            </div>
+            <div class="k-edit-field">
+                @Html.Kendo().NumericTextBoxFor(m => m.Length).Min(0).Spinners(false).HtmlAttributes(new {@tabindex = 7})
+                @Html.ValidationMessageFor(m => m.Length)
+            </div>
+        </td>
+        <td>
+            <div class="k-edit-label">
+                @Html.LabelFor(m => m.Joint)
+            </div>
+            <div class="k-edit-field">
+                @Html.Kendo().NumericTextBoxFor(m => m.Joint).Spinners(false).HtmlAttributes(new { @tabindex = 7 })
+                @Html.ValidationMessageFor(m => m.Joint)
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <div class="k-edit-label">
+                @Html.LabelFor(m => m.CoreId)
+            </div>
+            <div class="k-edit-field">
+                @(Html.Kendo().ComboBoxFor(m => m.CoreId)
+                      .Placeholder("--Select Core --")
+                      .DataTextField("Name")
+                      .DataValueField("CoreId")
+                      .HtmlAttributes(new {@tabindex = 9})
+                      .DataSource(source =>
+                      {
+                          source.Read(read =>
+                          {
+                              read.Action("GetCoreList", "Common");
+                          });
+                      }))
+
+                @Html.ValidationMessageFor(m => m.CoreId)
+            </div>
+        </td>
+        <td>
+            <div class="k-edit-label">
+                @Html.LabelFor(m => m.Grossweight)
+            </div>
+            <div class="k-edit-field">
+                @Html.Kendo().NumericTextBoxFor(m => m.Grossweight).Min(0).Spinners(false).HtmlAttributes(new { @tabindex = 10 })
+                @Html.ValidationMessageFor(m => m.Grossweight)
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <div class="k-edit-label">
+                @Html.LabelFor(m => m.TreatmentId)
+            </div>
+            <div class="k-edit-field">
+                @(Html.Kendo().ComboBoxFor(m => m.TreatmentId)
+                      .Placeholder("--Select Treatment --")
+                      .DataTextField("Name")
+                      .DataValueField("TreatmentId")
+                      .HtmlAttributes(new {@tabindex = 11})
+                      .DataSource(source =>
+                      {
+                          source.Read(read =>
+                          {
+                              read.Action("GetTreatmentList", "Common");
+                          });
+                      })
+                      )
+
+                @Html.ValidationMessageFor(m => m.TreatmentId)
+            </div>
+        </td>
+        <td>
+            <div class="k-edit-label">
+                @Html.LabelFor(m => m.OrderId)
+            </div>
+            <div class="k-edit-field">
+                @(Html.Kendo().ComboBoxFor(m => m.OrderId)
+                      .Placeholder("--Select Order --")
+                      .DataTextField("OrderNo")
+                      .DataValueField("OrderId")
+                      .HtmlAttributes(new { @tabindex = 13 })
+                      .DataSource(source =>
+                      {
+                          source.Read(read =>
+                          {
+                              read.Action("GetFilterOrderList", "Common");
+                          });
+                      })
+                      .Enable(false)
+                      .AutoBind(false)
+                      )
+                @Html.ValidationMessageFor(x => x.OrderId)
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td>
+            <div class="k-edit-label">
+                @Html.LabelFor(m => m.Quality)
+            </div>
+            <div class="k-edit-field">
+                @(Html.Kendo().ComboBoxFor(m => m.Quality)
+                      .Placeholder("--Select Quality --")
+                      .DataTextField("Name")
+                      .DataValueField("SlittingStatusId")
+                      .HtmlAttributes(new { @tabindex = 12 })
+                      .DataSource(source =>
+                      {
+                          source.Read(read =>
+                          {
+                              read.Action("GetQualityList", "Common");
+                          });
+                      })
+                )
+
+                @Html.ValidationMessageFor(m => m.Quality)
+            </div>
+        </td>
+        <td>
+            <div class="k-edit-label">
+                @Html.LabelFor(m => m.Remarks)
+            </div>
+            <div class="k-edit-field">
+                @Html.TextAreaFor(model => model.Remarks, new { @class = "k-textbox", style = "width: 100%;", @tabindex = 14 })
+                @Html.ValidationMessageFor(m => m.Remarks)
+            </div>
+        </td>
+    </tr>
+</table>
